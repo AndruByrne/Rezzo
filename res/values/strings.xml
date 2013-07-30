@@ -4,4 +4,6 @@
     <string name="hello">Hello World, MainActivity!</string>
     <string name="app_name">Rezzo</string>
     <string name="from_photo_button">Create Reference Image</string>
+	<string name="confirm_map">Rezzo GIS adjustment</string>
+	
 </resources>

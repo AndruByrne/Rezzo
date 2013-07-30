@@ -13,6 +13,7 @@ import android.widget.*;
 import com.andrubyrne.*;
 import java.io.*;
 import android.text.format.*;
+import android.net.*;
 
 public class Home extends Activity
 { 
@@ -28,6 +29,7 @@ public class Home extends Activity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 		imageView1 = (ImageView)findViewById(R.id.imageView1);
+		
 	}
 
 	public void fromPhoto(View v)
@@ -81,9 +83,7 @@ public class Home extends Activity
 		Log.i(Tag, "Receive the camera result");
 		if (resultCode == RESULT_OK && requestCode == CAMERA_REQUEST)
 		{
-			
-			File out = new File(getFilesDir(), "image.jpg");
-			//File out = new File(getFilesDir(), "newImage.jpg");
+			File out = new File(getFilesDir(), "newImage.jpg");
 			if (!out.exists())
 			{
 				Toast.makeText(getBaseContext(),
@@ -94,12 +94,37 @@ public class Home extends Activity
 
 			Bitmap mBitmap = BitmapFactory.decodeFile(out.getAbsolutePath());
 			imageView1.setImageBitmap(mBitmap);
+			//need to add a preference for using gsm for map connection before demo
+			//if wifi service, 
+			if(isConnected(this)){
+				//launch location verification intent and reference the newImage in /files
+				Intent i = new Intent(this, GIScraper.class);
+     			Toast.makeText(getBaseContext(),
+							   "WIFI ON", Toast.LENGTH_LONG)
+					.show();
+				startActivity(i);	
+				
+			}
+			else {//save image file to external(?) storage
+			    
+			}
 		}
 		if (resultCode == RESULT_OK  && requestCode == GALLERY_REQUEST){
 			
 		}
 	}
-
+	
+	private static boolean isConnected(Context context) {
+		ConnectivityManager connectivityManager = (ConnectivityManager)
+			context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo networkInfo = null;
+		if (connectivityManager != null) {
+			networkInfo =
+				connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+		}
+		return networkInfo == null ? false : networkInfo.isConnected();
+	}
+	
 	@Override
 	protected void onDestroy()
 	{
