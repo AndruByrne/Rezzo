@@ -29,7 +29,6 @@ public class Home extends Activity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 		imageView1 = (ImageView)findViewById(R.id.imageView1);
-		
 	}
 
 	public void fromPhoto(View v)
