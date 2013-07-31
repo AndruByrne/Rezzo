@@ -11,11 +11,9 @@
 		android:layout_alignParentLeft="true"
 		android:text="Accept GPS Coordinates"
 		android:onClick="goodPoint" />
-	<ImageView
-		android:id="@+id/imageViewSmaller"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_below="@+id/accept_GPS_coordinates"
-		android:layout_centerHorizontal="true" />
-
+	<fragment
+		android:id="@+id/map"
+		android:name="com.google.android.gms.maps.MapFragment"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent" />
 </RelativeLayout>
