@@ -7,6 +7,8 @@ import android.view.animation.*;
 import android.widget.*;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.CancelableCallback;
 
 import android.graphics.Interpolator;
 import android.content.*;
@@ -14,41 +16,76 @@ import com.google.android.gms.common.*;
 
 public class MapAffirm extends Activity
 {
-  //  private ImageView imageView;
+	//  private ImageView imageView;
 	private GoogleMap mMap;
 	LatLng latLng;
 	CameraPosition cameraPosition;
+	int aniStep = 1;
+
+
     @Override
-	public void onCreate(Bundle savedInstanceState){
+	public void onCreate(Bundle savedInstanceState)
+	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.map_affirm);
-		try {
+		try
+		{
 			MapsInitializer.initialize(this);
-		} catch (GooglePlayServicesNotAvailableException impossible) {
+		}
+		catch (GooglePlayServicesNotAvailableException impossible)
+		{
 			/* Impossible */
 		}
 		Intent i = this.getIntent();
 		latLng = new LatLng(i.getDoubleExtra("Latitude", 0.0), i.getDoubleExtra("Longitude", 0.0));
-		cameraPosition = new CameraPosition.Builder()
-			.target(latLng)      
-			.zoom(17)                  
-			.bearing(0)              
-			.tilt(60)                  
-			.build(); 
-			if(CameraUpdateFactory.newCameraPosition(cameraPosition)!=null) Toast.makeText(this, "camerapos", Toast.LENGTH_SHORT).show();
 		mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
-		mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-		
+    	mMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.builder()
+																 .target(latLng)
+																 .zoom(6)
+																 .bearing(60)
+																 .tilt(60)
+																 .build()), myCancelableCallback);
+
 		mMap.addMarker(new MarkerOptions()
 					   .position(latLng)
 					   .title("Location of Photographer"));
+
 	}
-	
-	public void goodPoint(View v){
+
+	public CancelableCallback myCancelableCallback = new CancelableCallback(){
+		
+		@Override
+		public void onFinish()
+		{
+			if (++aniStep < 4)
+			{
+				mMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.builder()
+						 .target(latLng)
+						 .zoom(6*aniStep)
+						 .bearing(120*aniStep)
+						 .tilt(60)
+						 .build()), myCancelableCallback);
+			} else {mMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.builder()
+																			 .target(latLng)
+																			 .zoom(18)
+																			 .bearing(0)
+																			 .tilt(0)
+																			 .build()));
+			}
+		}
+		@Override
+		public void onCancel()
+		{}
+
+	};
+
+	public void goodPoint(View v)
+	{
 	}
-	
+
 	public void animateMarker(final Marker marker, final LatLng toPosition,
-							  final boolean hideMarker) {
+							  final boolean hideMarker)
+	{
         final Handler handler = new Handler();
         final long start = SystemClock.uptimeMillis();
         Projection proj = mMap.getProjection();
@@ -60,7 +97,8 @@ public class MapAffirm extends Activity
 
         handler.post(new Runnable() {
 				@Override
-				public void run() {
+				public void run()
+				{
 					long elapsed = SystemClock.uptimeMillis() - start;
 					float t = interpolator.getInterpolation((float) elapsed
 															/ duration);
@@ -74,6 +112,6 @@ public class MapAffirm extends Activity
 					else if (hideMarker) marker.setVisible(false);
 					else marker.setVisible(true);
 				}
-		});
+			});
     }
 }

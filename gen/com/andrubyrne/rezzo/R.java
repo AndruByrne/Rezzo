@@ -278,7 +278,8 @@ containing a value of this type.
         public static final int common_signin_button_text_long=0x7f06000e;
         public static final int from_photo_button=0x7f060018;
         public static final int hello=0x7f060015;
-        public static final int no_internal=0x7f06001b;
+        public static final int no_internal=0x7f06001c;
+        public static final int no_wifi=0x7f06001b;
     }
     public static final class styleable {
         /** Attributes that can be used with a MapAttrs.

@@ -7,5 +7,6 @@
     <string name="from_photo_button">Create Reference Image</string>
 	<string name="MapAffirm_title">Rezzo GIS adjustment</string>
     <string name="GIScraper_title">Initial GIS data</string>
-	<string name="no_internal">Sorry, could not find an internal file; oh god, what have you abandoned me?</string>
+	<string name="no_wifi">No Wi-Fi found, saving file to external storage</string>
+	<string name="no_internal">Sorry, could not find an internal file; oh god, why have you abandoned me?</string>
 </resources>

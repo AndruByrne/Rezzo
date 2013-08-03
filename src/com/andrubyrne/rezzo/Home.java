@@ -1,3 +1,22 @@
+/*
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+ */
+
 package com.andrubyrne.rezzo;
 import android.app.*;
 import android.content.*;
@@ -17,6 +36,7 @@ import android.location.*;
 import java.io.*;
 import com.andrubyrne.exifhelper.*;
 import java.lang.Double;
+import android.content.res.*;
 
 public class Home extends Activity
 { 
@@ -30,7 +50,8 @@ public class Home extends Activity
 	LocationManager locationManager;
 	Location bestLocation;
 	private static StringBuilder stringBuilder;
-	
+	private static String PATH = Environment.getExternalStorageDirectory().getPath() + "/Rezzo/";
+
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
@@ -39,8 +60,10 @@ public class Home extends Activity
 		imageView1 = (ImageView)findViewById(R.id.imageView1);
 	}
     @Override
-	public void onResume(){
+	public void onResume()
+	{
 		super.onResume();
+		//todo: check for wifi; if and if wifi pref not set to ignore, then notify
 		locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 		String locationProvider = LocationManager.NETWORK_PROVIDER;
 		bestLocation = locationManager.getLastKnownLocation(locationProvider);
@@ -114,18 +137,29 @@ public class Home extends Activity
 					mEH.setGpsLongitudeRef(longitudeRef(bestLocation.getLongitude()));
 					mEH.writeExifData();
 				}
-				catch (IOException e) {Toast.makeText(this, R.string.no_internal, Toast.LENGTH_LONG);}
-				finally	{}
-				
+				catch (IOException e)
+				{Toast.makeText(this, R.string.no_internal, Toast.LENGTH_LONG);}
+				finally
+				{}
+
 				Intent i = new Intent(this, GIScraper.class);
 				startActivity(i);
 			}
 			else
 			{//save image file to external(?) storage
-				Toast.makeText(getBaseContext(),
-							   "WIFI OFF", Toast.LENGTH_LONG)
+				Toast.makeText(getBaseContext(), 
+							   R.string.no_wifi, 
+							   Toast.LENGTH_LONG)
 					.show();
-			}
+				try
+				{
+					copyImage();
+				}
+				catch (IOException e)
+				{Toast.makeText(this, R.string.no_internal, Toast.LENGTH_SHORT).show();
+					Log.e(getBaseContext().toString(), e.toString());
+				}
+ 			}
 		}
 		if (resultCode == RESULT_OK  && requestCode == GALLERY_REQUEST)
 		{
@@ -160,7 +194,7 @@ public class Home extends Activity
 		}
 		return networkInfo == null ? false : networkInfo.isConnected();
 	}
-	
+
 	/** Determines whether one Location reading is better than the current Location fix
 	 * @param location  The new Location that you want to evaluate
 	 * @param currentBestLocation  The current Location fix, to which you want to compare the new one
@@ -216,17 +250,18 @@ public class Home extends Activity
 		}
 		return false;
 	}
-	
-	synchronized public static final String convertToRational(double latitude) {
+
+	synchronized public static final String convertToRational(double latitude)
+	{
 		stringBuilder = new StringBuilder(20);
-        latitude=Math.abs(latitude);
+        latitude = Math.abs(latitude);
         int degree = (int) latitude;
         latitude *= 60;
         latitude -= (degree * 60.0d);
         int minute = (int) latitude;
         latitude *= 60;
         latitude -= (minute * 60.0d);
-        int second = (int) (latitude*1000.0d);
+        int second = (int) (latitude * 1000.0d);
 
         stringBuilder.setLength(0);
         stringBuilder.append(degree);
@@ -247,9 +282,10 @@ public class Home extends Activity
 		}
 		return provider1.equals(provider2);
 	}
-	
-	public static String latitudeRef(double latitude) {
-        return latitude<0.0d?"S":"N";
+
+	public static String latitudeRef(double latitude)
+	{
+        return latitude < 0.0d ?"S": "N";
     }
 
     /**
@@ -257,10 +293,11 @@ public class Home extends Activity
      * @param latitude
      * @return S or N
      */
-    public static String longitudeRef(double longitude) {
-        return longitude<0.0d?"W":"E";
+    public static String longitudeRef(double longitude)
+	{
+        return longitude < 0.0d ?"W": "E";
     }
-	
+
 	public void askForGPS()
 	{
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -285,6 +322,41 @@ public class Home extends Activity
 				}
 			});
 		builder.create().show();
+	}
+
+	private void copyImage() 
+	throws IOException
+	{ 
+        File outDir = new File(PATH+"/");
+		File outFile = new File(PATH + "/" + DateFormat.format("dd-MM-yyyy:hh:mm:ss", new java.util.Date()).toString() + ".jpg");
+		Toast.makeText(this, "savefile: " + outFile.getAbsolutePath().toString(), Toast.LENGTH_SHORT).show();
+		if (!outDir.exists())
+		{
+			try
+			{
+				outDir.mkdirs();
+			}
+			catch (SecurityException e)
+			{
+				Log.e(Tag, "unable to write on the sd card " + e.toString());
+			}
+		}
+		File inFile = new File(getFilesDir(), "newImage.jpg");
+		OutputStream out = new FileOutputStream(outFile, false);
+		InputStream in = new FileInputStream(inFile);
+
+		byte[] buffer = new byte[1024]; 
+		int read; 
+		while ((read = in.read(buffer)) != -1)
+		{ 
+			out.write(buffer, 0, read); 
+		} 
+
+		in.close(); 
+		in = null; 
+		out.flush(); 
+		out.close(); 
+		out = null; 
 	}
 
 	@Override
