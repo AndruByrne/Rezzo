@@ -4,16 +4,21 @@
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent"
 	android:orientation="vertical" >
-	<Button
-		android:id="@+id/launchAffirm"
+	<TextView
+		android:id="@+id/mapInstruction"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
+		android:layout_centerHorizontal="true" />
+	<Button
+		android:id="@+id/launchAffirm"
+		android:layout_width="96dp"
+		android:layout_height="wrap_content"
 		android:layout_alignParentLeft="true"
+		android:layout_below="@id/mapInstruction"
 		android:text="OK"
 		android:onClick="launchAffirm" />
-
-	<ImageView
-		android:id="@+id/imageView1"
+ 	<ImageView
+		android:id="@+id/imageViewSmaller"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_below="@id/launchAffirm"

@@ -97,14 +97,27 @@ public class ExifHelper {
 		return this.gpsLatitude;
 	}
 	public String getGpsLatitudeRef(){
-		return this.gpsLatitude;
+		return this.gpsLatitudeRef;
 	}
 	public String getGpsLongitude(){
 		return this.gpsLongitude;
 	}
 	public String getGpsLongitudeRef(){
 		return this.gpsLongitudeRef;
+	}	
+	public void setGpsLatitude(String latitude){
+		this.gpsLatitude = latitude;
 	}
+	public void setGpsLatitudeRef(String latitudeRef){
+		this.gpsLatitudeRef = latitudeRef;
+	}
+	public void setGpsLongitude(String longitude){
+		this.gpsLongitude = longitude;
+	}
+	public void setGpsLongitudeRef(String longitudeRef){
+		this.gpsLongitudeRef = longitudeRef;
+	}
+	
 	/**
      * Writes the previously stored EXIF data to the output file.
      *
