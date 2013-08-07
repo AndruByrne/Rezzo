@@ -21,29 +21,22 @@ package com.andrubyrne.rezzo;
 import android.app.*;
 import android.content.*;
 import android.content.pm.*;
-import android.graphics.*;
-import android.nfc.*;
+import android.location.*;
+import android.net.*;
 import android.os.*;
 import android.provider.*;
+import android.text.format.*;
 import android.util.*;
 import android.view.*;
-import android.view.View.*;
 import android.widget.*;
-import com.andrubyrne.*;
-import android.text.format.*;
-import android.net.*;
-import android.location.*;
-import java.io.*;
 import com.andrubyrne.exifhelper.*;
-import java.lang.Double;
-import android.content.res.*;
+import java.io.*;
 
 public class Home extends Activity
 { 
-	private final int CAMERA_REQUEST = 1;
+	private final int CAMERA_REQUEST = 2885;
 	private static final int TWO_MINUTES = 1000 * 60 * 2;
-	private final int GALLERY_REQUEST = 2;
-	private final String Tag = getClass().getName();
+	private final String TAG = getClass().getName();
 	ImageView imageView1;
 	ExifHelper mEH = new ExifHelper();
 	Time today = new Time(Time.getCurrentTimezone());
@@ -51,7 +44,8 @@ public class Home extends Activity
 	Location bestLocation;
 	private static StringBuilder stringBuilder;
 	private static String PATH = Environment.getExternalStorageDirectory().getPath() + "/Rezzo/";
-
+	File outDir = new File(PATH+"/");
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
@@ -64,6 +58,7 @@ public class Home extends Activity
 	{
 		super.onResume();
 		//todo: check for wifi; if and if wifi pref not set to ignore, then notify
+//		if(isConnected(this));
 		locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 		String locationProvider = LocationManager.NETWORK_PROVIDER;
 		bestLocation = locationManager.getLastKnownLocation(locationProvider);
@@ -76,27 +71,17 @@ public class Home extends Activity
 		PackageManager pm = getPackageManager();
 		if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
 		{
+			Intent i = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+			i.putExtra(MediaStore.EXTRA_OUTPUT, MyFileContentProvider.CONTENT_URI);		
 			if (pm.hasSystemFeature(PackageManager.FEATURE_CAMERA))
-			{
-				Intent i = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-				i.putExtra(MediaStore.EXTRA_OUTPUT, MyFileContentProvider.CONTENT_URI);
-				i.putExtra("camerasensortype", 1); // call the rear camera
-				i.putExtra("autofocus", true);
-				i.putExtra("fullScreen", false);
-				i.putExtra("showActionIcons", false);
-				startActivityForResult(i, CAMERA_REQUEST);
-			}
+				i.putExtra("camerasensortype", 1); // call the rear camera			
 			else if (pm.hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT))
-			{
-				Intent i = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-				i.putExtra(MediaStore.EXTRA_OUTPUT, MyFileContentProvider.CONTENT_URI);
-				i.putExtra("camerasensortype", 2); // call the front camera
-				i.putExtra("autofocus", true);
-				i.putExtra("fullScreen", false);
-				i.putExtra("showActionIcons", false);
-				startActivityForResult(i, CAMERA_REQUEST);
-			}
+				i.putExtra("camerasensortype", 2); // call the front camera			
 			else Toast.makeText(getBaseContext(), "Camera is not available", Toast.LENGTH_LONG).show();
+			i.putExtra("autofocus", true);
+			i.putExtra("fullScreen", false);
+			i.putExtra("showActionIcons", false);
+			startActivityForResult(i, CAMERA_REQUEST);	
 		}		
 		else askForGPS();
 
@@ -105,21 +90,17 @@ public class Home extends Activity
 
 	public void fromGallery(View v)
 	{
-		PackageManager pm = getPackageManager();
-		if (pm.hasSystemFeature(PackageManager.FEATURE_CAMERA))
-		{
-			Intent i = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-			i.putExtra(MediaStore.EXTRA_OUTPUT, MyFileContentProvider.CONTENT_URI);
-			startActivityForResult(i, GALLERY_REQUEST);
-		}
-		else Toast.makeText(getBaseContext(), "Camera is not available", Toast.LENGTH_LONG).show();
+		Intent i = new Intent(this, GIScraper.class);
+		i.putExtra("batch", true);
+		startActivity(i);
+		//do the intent here, add extras to determine layout
 	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data)
 	{
 		super.onActivityResult(requestCode, resultCode, data);
-		Log.i(Tag, "Receive the camera result");
+		Log.i(TAG, "Receive the camera result");
 		if (resultCode == RESULT_OK && requestCode == CAMERA_REQUEST)
 		{
 			//need to add a preference for using gsm for map connection before demo
@@ -128,42 +109,22 @@ public class Home extends Activity
 			{
 				//	attach GIS data by getLatitude()&&
 				File out = new File(getFilesDir(), "newImage.jpg");
-				try
-				{
-					mEH.createOutFile(out.getAbsolutePath());
-					mEH.setGpsLatitude(convertToRational(bestLocation.getLatitude()));	
-				    mEH.setGpsLongitude(convertToRational(bestLocation.getLongitude()));
-			    	mEH.setGpsLatitudeRef(latitudeRef(bestLocation.getLatitude()));
-					mEH.setGpsLongitudeRef(longitudeRef(bestLocation.getLongitude()));
-					mEH.writeExifData();
-				}
-				catch (IOException e)
-				{Toast.makeText(this, R.string.no_internal, Toast.LENGTH_LONG);}
-				finally
-				{}
+                writeExif(out);
 
 				Intent i = new Intent(this, GIScraper.class);
+				i.putExtra("batch", false);
 				startActivity(i);
 			}
 			else
-			{//save image file to external(?) storage
-				Toast.makeText(getBaseContext(), 
-							   R.string.no_wifi, 
-							   Toast.LENGTH_LONG)
-					.show();
-				try
-				{
-					copyImage();
-				}
+			{//save image file to external storage
+				Toast.makeText(getBaseContext(), R.string.no_wifi, Toast.LENGTH_LONG).show();
+				try{copyImage();}
 				catch (IOException e)
-				{Toast.makeText(this, R.string.no_internal, Toast.LENGTH_SHORT).show();
+				{
+					Toast.makeText(this, R.string.no_internal, Toast.LENGTH_SHORT).show();
 					Log.e(getBaseContext().toString(), e.toString());
 				}
  			}
-		}
-		if (resultCode == RESULT_OK  && requestCode == GALLERY_REQUEST)
-		{
-
 		}
 	}
 
@@ -324,12 +285,26 @@ public class Home extends Activity
 		builder.create().show();
 	}
 
+	private void writeExif(File outFile){
+		try
+		{
+			mEH.createOutFile(outFile.getAbsolutePath());
+			mEH.setGpsLatitude(convertToRational(bestLocation.getLatitude()));	
+			mEH.setGpsLongitude(convertToRational(bestLocation.getLongitude()));
+			mEH.setGpsLatitudeRef(latitudeRef(bestLocation.getLatitude()));
+			mEH.setGpsLongitudeRef(longitudeRef(bestLocation.getLongitude()));
+			mEH.writeExifData();
+		}
+		catch (IOException e)
+		{Toast.makeText(this, R.string.no_internal, Toast.LENGTH_LONG);}
+		finally
+		{}
+	}
 	private void copyImage() 
 	throws IOException
 	{ 
-        File outDir = new File(PATH+"/");
 		File outFile = new File(PATH + "/" + DateFormat.format("dd-MM-yyyy:hh:mm:ss", new java.util.Date()).toString() + ".jpg");
-		Toast.makeText(this, "savefile: " + outFile.getAbsolutePath().toString(), Toast.LENGTH_SHORT).show();
+	//	Toast.makeText(this, "savefile: " + outFile.getAbsolutePath().toString(), Toast.LENGTH_SHORT).show();
 		if (!outDir.exists())
 		{
 			try
@@ -338,7 +313,7 @@ public class Home extends Activity
 			}
 			catch (SecurityException e)
 			{
-				Log.e(Tag, "unable to write on the sd card " + e.toString());
+				Log.e(TAG, "unable to write on the sd card " + e.toString());
 			}
 		}
 		File inFile = new File(getFilesDir(), "newImage.jpg");
@@ -357,6 +332,7 @@ public class Home extends Activity
 		out.flush(); 
 		out.close(); 
 		out = null; 
+		writeExif(outFile);
 	}
 
 	@Override

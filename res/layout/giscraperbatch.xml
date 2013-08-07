@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/RelativeLayout3"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:orientation="vertical" >
+	<TextView
+		android:id="@+id/mapInstructionBatch"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:layout_centerHorizontal="true" />
+	<Button
+		android:id="@+id/launchAffirmBatch"
+		android:layout_width="96dp"
+		android:layout_height="wrap_content"
+		android:layout_alignParentLeft="true"
+		android:layout_below="@id/mapInstructionBatch"
+		android:text="OK"
+		android:onClick="launchAffirm" />
+	<Button
+		android:id="@+id/skipPic"
+		android:layout_width="96dp"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/launchAffirmBatch"
+		android:text="Skip"
+		android:onClick="skipBatchPic" />
+	<Button
+		android:id="@+id/deletePic"
+		android:layout_width="96dp"
+		android:layout_height="wrap_content"
+		android:layout_alignParentLeft="true"
+		android:layout_below="@id/skipPic"
+		android:text="Delete"
+		android:onClick="deleteBatchPic" />
+	<Button
+		android:id="@+id/exitBatch" 	
+		android:layout_width="96dp"
+		android:layout_height="wrap_content"
+		android:layout_alignParentLeft="true"
+		android:layout_below="@id/deletePic"
+		android:text="Exit"
+		android:onClick="exitBatch" />
+ 	<ImageView
+		android:id="@+id/smallerImageViewBatch"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/launchAffirmBatch"
+		android:layout_centerHorizontal="true" />
+
+</RelativeLayout>

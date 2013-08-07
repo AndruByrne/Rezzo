@@ -21,23 +21,21 @@ public class MapAffirm extends Activity
 	LatLng latLng;
 	CameraPosition cameraPosition;
 	int aniStep = 1;
-
-
+	Intent homeIntent;
+	Intent batchIntent;
+	Intent intent;
+	Bundle bundle;
+	boolean batch;		
+	
     @Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.map_affirm);
-		try
-		{
-			MapsInitializer.initialize(this);
-		}
-		catch (GooglePlayServicesNotAvailableException impossible)
-		{
-			/* Impossible */
-		}
-		Intent i = this.getIntent();
-		latLng = new LatLng(i.getDoubleExtra("Latitude", 0.0), i.getDoubleExtra("Longitude", 0.0));
+		try{MapsInitializer.initialize(this);}
+		catch (GooglePlayServicesNotAvailableException impossible){	/* Impossible */	}
+	    intent = this.getIntent();
+		latLng = new LatLng(intent.getDoubleExtra("Latitude", 0.0), intent.getDoubleExtra("Longitude", 0.0));
 		mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
     	mMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.builder()
 																 .target(latLng)
@@ -51,18 +49,29 @@ public class MapAffirm extends Activity
 					   .title("Location of Photographer"));
 
 	}
+	public void onResume(){
+		super.onResume();
+		homeIntent = new Intent(this, Home.class);
+		batchIntent = new Intent(this, GIScraper.class);
+		intent = this.getIntent();
+		bundle = intent.getExtras();
+		batch = intent.getBooleanExtra("batch", false);	
+		homeIntent.putExtras(bundle);
+		batchIntent.putExtras(bundle);
+		
+	}
 
 	public CancelableCallback myCancelableCallback = new CancelableCallback(){
 		
 		@Override
 		public void onFinish()
 		{
-			if (++aniStep < 4)
+			if (++aniStep < 10)
 			{
 				mMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.builder()
 						 .target(latLng)
-						 .zoom(6*aniStep)
-						 .bearing(120*aniStep)
+						 .zoom(2*aniStep)
+						 .bearing(40*aniStep)
 						 .tilt(60)
 						 .build()), myCancelableCallback);
 			} else {mMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.builder()
@@ -81,6 +90,11 @@ public class MapAffirm extends Activity
 
 	public void goodPoint(View v)
 	{
+		if(batch){
+			Toast.makeText(this, "filepath: "+intent.getStringExtra("filepath"), Toast.LENGTH_LONG).show();
+		//	deleteFile(intent.getStringExtra("filepath"));
+		} else startActivity(homeIntent);
+		finish();
 	}
 
 	public void animateMarker(final Marker marker, final LatLng toPosition,
