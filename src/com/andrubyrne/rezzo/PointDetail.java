@@ -15,7 +15,7 @@ import android.util.*;
 
 public class PointDetail extends Activity
 {
-	Intent homeIntent;
+//	Intent homeIntent;
 	Intent batchIntent;
 	Intent intent;
 	Bundle bundle;
@@ -25,7 +25,8 @@ public class PointDetail extends Activity
 	ImageView imageView;
 	Bitmap bitmap;
 	private final String TAG = getClass().getSimpleName();
-	
+	private String filepath;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
@@ -35,25 +36,29 @@ public class PointDetail extends Activity
 		namingPlace = (EditText)findViewById(R.id.namePoint);
 		imageView = (ImageView)findViewById(R.id.finalImageView);
     }
-	
+
 	@Override	
-    public void onResume(){
+    public void onResume()
+	{
 		super.onResume();
-		homeIntent = new Intent(this, Home.class);
+//		homeIntent = new Intent(this, Home.class);
 		batchIntent = new Intent(this, GIScraper.class);
 		intent = this.getIntent();
 		bundle = intent.getExtras();
-		homeIntent.putExtras(bundle);
+		filepath = intent.getStringExtra("filepath");
+//		homeIntent.putExtras(bundle);
 		batchIntent.putExtras(bundle);
 		batch = intent.getBooleanExtra("batch", false);
-		finalGIStext.setText(getString(R.string.final_gis_text)+
-		     "Latitude: "+intent.getDoubleExtra("Latitude", 0.0)+" Longitude: "+intent.getDoubleExtra("Longitude", 0.0));
+		finalGIStext.setText(getString(R.string.final_gis_text) +
+							 "Latitude: " + intent.getDoubleExtra("Latitude", 0.0) + " Longitude: " + intent.getDoubleExtra("Longitude", 0.0));
 	    bitmap = BitmapFactory.decodeFile(intent.getStringExtra("filepath"));
 		imageView.setImageBitmap(bitmap);
+
 	}
-	
-	public void doneNaming(View v){
-		File outFile = new File(intent.getStringExtra("filepath")+".json");
+
+	public void doneNaming(View v)
+	{
+		File outFile = new File(filepath + ".json");
 		try
 		{
 			OutputStream out = new FileOutputStream(outFile, false);
@@ -62,12 +67,21 @@ public class PointDetail extends Activity
 		    out.close();
 			out = null;
 		}
-		catch (FileNotFoundException e)	{Log.e(TAG, "json not opened");}		
-		catch (IOException e) {Log.e(TAG, "json not written");}
+		catch (FileNotFoundException e)
+		{Log.e(TAG, "json not opened");}		
+		catch (IOException e)
+		{Log.e(TAG, "json not written");}
+
+		if (batch)
+		{
+			deleteFile(filepath);
+			startActivity(batchIntent);
+		}
 	    finish();
 	}
-		
-	public void writeJsonStream(OutputStream out) throws IOException {
+
+	public void writeJsonStream(OutputStream out) throws IOException
+	{
 		JsonWriter writer = new JsonWriter(new OutputStreamWriter(out, "UTF-8"));
 		writer.setIndent("  ");
 		writer.beginObject();
@@ -78,7 +92,8 @@ public class PointDetail extends Activity
 		writer.close();
     }
 
-	public void writeGIS(JsonWriter writer) throws IOException{
+	public void writeGIS(JsonWriter writer) throws IOException
+	{
 		writer.beginObject();
 		writer.name("Latitude").value(intent.getDoubleExtra("Latitude", 0.0)).toString();
 		writer.name("Longitude").value(intent.getDoubleExtra("Longitude", 0.0)).toString();

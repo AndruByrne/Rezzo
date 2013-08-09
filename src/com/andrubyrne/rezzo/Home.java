@@ -1,8 +1,4 @@
-/*
- Licensed to the Apache Software Foundation (ASF) under one
- or more contributor license agreements.  See the NOTICE file
- distributed with this work for additional information
- regarding copyright ownership.  The ASF licenses this file
+/* Andrew Byrne licenses this file
  to you under the Apache License, Version 2.0 (the
  "License"); you may not use this file except in compliance
  with the License.  You may obtain a copy of the License at
@@ -16,6 +12,8 @@
  specific language governing permissions and limitations
  under the License.
  */
+ 
+ // stillneed pref and Wi-Filock off
 
 package com.andrubyrne.rezzo;
 import android.app.*;
@@ -109,10 +107,10 @@ public class Home extends Activity
 			else 
 			{
 				//need to add a preference for using gsm for map connection before demo
-				//if wifi service, 
+				
 				if (utils.isConnected(this))
 				{
-					//	attach GIS data by getLatitude()&&
+					//	attach GIS data
 					File out = new File(getFilesDir(), "newImage.jpg");
 					writeExif(out);
 

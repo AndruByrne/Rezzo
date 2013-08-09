@@ -21,23 +21,21 @@
 		android:id="@+id/skipPic"
 		android:layout_width="96dp"
 		android:layout_height="wrap_content"
-		android:layout_below="@id/launchAffirmBatch"
+		android:layout_toRightOf="@id/launchAffirmBatch"
 		android:text="@string/skip_pic_button"
 		android:onClick="skipBatchPic" />
 	<Button
 		android:id="@+id/deletePic"
 		android:layout_width="96dp"
 		android:layout_height="wrap_content"
-		android:layout_alignParentLeft="true"
-		android:layout_below="@id/skipPic"
+		android:layout_toRightOf="@id/skipPic"
 		android:text="@string/del_pic_button"
 		android:onClick="deleteBatchPic" />
 	<Button
 		android:id="@+id/exitBatch" 	
 		android:layout_width="96dp"
 		android:layout_height="wrap_content"
-		android:layout_alignParentLeft="true"
-		android:layout_below="@id/deletePic"
+		android:layout_toRightOf="@id/deletePic"
 		android:text="Exit"
 		android:onClick="exitBatch" />
  	<ImageView

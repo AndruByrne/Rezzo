@@ -101,7 +101,7 @@ public class GIScraper extends Activity
 							 Longitude + " longitude. "+getString(R.string.map_instructions));
 			Bitmap mBitmap = BitmapFactory.decodeFile(inFile.getAbsolutePath());
 			imageView.setImageBitmap(mBitmap);
-			mapIntent.putExtra("filepath", inFile.getAbsolutePath().toString());			
+			mapIntent.putExtra("filepath", inFile.getAbsolutePath());			
 			if (Latitude != null) mapIntent.putExtra("Latitude", Latitude.doubleValue());
 			else mapIntent.putExtra("Latitude", "null");
 			if (Longitude != null) mapIntent.putExtra("Longitude", Longitude.doubleValue());
@@ -114,7 +114,8 @@ public class GIScraper extends Activity
 	}
 	public void launchAffirm(View v)
 	{
-		startActivity(mapIntent);		
+		startActivity(mapIntent);
+        finish();		
 	}
 
 	public void skipBatchPic(View v)
