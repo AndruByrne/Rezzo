@@ -4,7 +4,7 @@
 	android:versionCode="1"
 	android:versionName="1.0" >
 	<uses-sdk android:minSdkVersion="13" />
-	<uses-sdk android:targetSdkVersion="16" />
+	<uses-sdk android:targetSdkVersion="17" />
 	<uses-feature
 		android:name="android.hardware.camera"
 		android:required="false" />
@@ -48,6 +48,10 @@
 			android:name=".MapAffirm"
 			android:label="@string/MapAffirm_title" >
 		</activity>
+		<activity
+			android:name=".UserSettings"
+			android:label="@string/MapAffirm_title" >
+		</activity>		
 		<provider
 			android:name=".MyFileContentProvider"
 			android:authorities="com.andrubyrne.rezzo"

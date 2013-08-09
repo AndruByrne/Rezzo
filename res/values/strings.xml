@@ -20,5 +20,9 @@
 	<string name="map_instructions">On the following map, please refine or define this calculation; if needed, move the indicator with a long press and press the button on the upper right.</string>
 	<string name="final_gis_text">Please name the location at </string>
 	<string name="prefs_name">Preferences</string>
+	<string name="use_gsm">Use GSM Radio</string>
+	<string name="use_gsm_summ">Attempt to use cellular network (only recommended for areas with reliable service)</string>
+	<string name="goto_source">View source code</string>
+	
 	
 </resources>

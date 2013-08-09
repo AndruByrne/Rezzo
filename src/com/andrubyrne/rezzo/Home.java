@@ -13,7 +13,7 @@
  under the License.
  */
  
- // stillneed pref and Wi-Filock off
+ // stillneed pref and Wi-Filock off and change json
 
 package com.andrubyrne.rezzo;
 import android.app.*;
@@ -30,6 +30,7 @@ import android.widget.*;
 import com.andrubyrne.exifhelper.*;
 import com.andrubyrne.utils.*;
 import java.io.*;
+import android.preference.*;
 
 public class Home extends Activity
 { 
@@ -44,7 +45,7 @@ public class Home extends Activity
 	private static String PATH = Environment.getExternalStorageDirectory().getPath() + "/Rezzo/";
 	File outDir = new File(PATH + "/");
 	File cameraPic;
-
+    SharedPreferences preferences;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -52,6 +53,11 @@ public class Home extends Activity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 		cameraPic = new File(getFilesDir(), "newImage.jpg");
+		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+		preferences = PreferenceManager.getDefaultSharedPreferences(this);
+		if(preferences.getBoolean("ignore_wifi", false)){
+			
+		}
 	}
     @Override
 	public void onResume()
@@ -184,4 +190,22 @@ public class Home extends Activity
 //		locationManager.removeUpdates(locationListener);
 		imageView1 = null;
 	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuItem buttonSettings = menu.add("Settings"); // This is a hardcoded string. When you get around to it, switch it to a localized String resource.
+		buttonSettings.setIcon(R.drawable.ic_launcher);
+		buttonSettings.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER); //force overflow method
+		buttonSettings.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+
+				public boolean onMenuItemClick(MenuItem item) {
+					Intent settingsIntent = new Intent(Home.this, UserSettings.class);
+					Home.this.startActivity(settingsIntent);
+					return false;
+				}
+			});
+		return true;
+	}
 }
+	
+
