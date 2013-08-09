@@ -7,7 +7,7 @@ import android.os.*;
 import java.io.*;
 import java.util.*;
 
-public class MyFileContentProvider extends ContentProvider
+public class FileContentProvider extends ContentProvider
  {
 
 	public static final Uri CONTENT_URI = Uri.parse("content://com.andrubyrne.rezzo/");

@@ -7,6 +7,7 @@ import android.widget.*;
 import java.io.*;
 import android.graphics.*;
 import com.andrubyrne.exifhelper.ExifHelper;
+
 import android.location.*;
 import android.provider.*;
 import android.util.*;
@@ -18,16 +19,17 @@ public class GIScraper extends Activity
     ImageView imageView;
 	TextView textView;
 	Float Latitude, Longitude;
-	File inFile;
-	Intent intent;
 	Boolean batch;
 	int batchIndex;
-	private final String TAG = getClass().getName();
+	private final String TAG = getClass().getSimpleName();
 	private static String PATH = Environment.getExternalStorageDirectory().getPath() + "/Rezzo/";
+	File inFile;
 	File outDir = new File(PATH+"/");
+	Intent intent;
 	Intent homeIntent;
 	Intent mapIntent;
-	
+	ExifHelper mEH = new ExifHelper();
+	JPGFileFilter jpgFileFilter;
     public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
@@ -46,6 +48,8 @@ public class GIScraper extends Activity
 			textView = (TextView)findViewById(R.id.mapInstruction);
 		}
 		batchIndex = 0;
+		jpgFileFilter = new JPGFileFilter();
+		
 	}	
 	public void onResume()
 	{
@@ -56,7 +60,6 @@ public class GIScraper extends Activity
 		mapIntent.putExtras(bundle);
 		if (batch)
 		{
-			JPGFileFilter jpgFileFilter = new JPGFileFilter();
 			File[] refImages = outDir.listFiles(jpgFileFilter);
 			if (refImages.length == 0)
 			{	//check that there are files
@@ -69,53 +72,49 @@ public class GIScraper extends Activity
 			    startActivity(homeIntent);	
 				finish();
 			}
-			else {
-				 inFile = refImages[batchIndex];
-		//		 mapIntent.putExtra("filepath", refImages[batchIndex].getAbsolutePath().toString());
-			     }
+			else inFile = refImages[batchIndex];
 			} 
 		else inFile = new File(getFilesDir(), "newImage.jpg");
 		try
 		{ 
 			String filepath = inFile.getAbsolutePath();
-			ExifHelper mEH = new ExifHelper();
 			mEH.createInFile(filepath);
 			mEH.readExifData();
 
-			String LATITUDE = mEH.getGpsLatitude();
-			String LATITUDE_REF = mEH.getGpsLatitudeRef();
-			String LONGITUDE = mEH.getGpsLongitude();
-			String LONGITUDE_REF = mEH.getGpsLongitudeRef();
+			String latitude = mEH.gpsLatitude;
+			String latitude_ref = mEH.gpsLatitudeRef;
+			String longitude = mEH.gpsLongitude;
+			String longitude_ref = mEH.gpsLongitudeRef;
 
-			if ((LATITUDE != null)
-				&& (LATITUDE_REF != null)
-				&& (LONGITUDE != null)
-				&& (LONGITUDE_REF != null))
+			if ((latitude != null)
+				&& (latitude_ref != null)
+				&& (longitude != null)
+				&& (longitude_ref != null))
 			{
-				if (LATITUDE_REF.equals("N")) Latitude = Math.abs(convertToDegree(LATITUDE));
-				else Latitude = 0 - convertToDegree(LATITUDE);
-				if (LONGITUDE_REF.equals("E")) Longitude = Math.abs(convertToDegree(LONGITUDE));
-				else Longitude = 0 - convertToDegree(LONGITUDE);
+				if (latitude_ref.equals("N")) Latitude = Math.abs(convertToDegree(latitude));
+				else Latitude = 0 - convertToDegree(latitude);
+				if (longitude_ref.equals("E")) Longitude = Math.abs(convertToDegree(longitude));
+				else Longitude = 0 - convertToDegree(longitude);
 			}
 			textView.setText("This picture seems to have been taken at " + 
 							 Latitude + " latitude and " + 
-							 Longitude + " longitude. On the following map, please refine or define this calculation by moving the indicator and pressing the button on the upper right.");
+							 Longitude + " longitude. "+getString(R.string.map_instructions));
 			Bitmap mBitmap = BitmapFactory.decodeFile(inFile.getAbsolutePath());
 			imageView.setImageBitmap(mBitmap);
+			mapIntent.putExtra("filepath", inFile.getAbsolutePath().toString());			
 			if (Latitude != null) mapIntent.putExtra("Latitude", Latitude.doubleValue());
 			else mapIntent.putExtra("Latitude", "null");
 			if (Longitude != null) mapIntent.putExtra("Longitude", Longitude.doubleValue());
 			else mapIntent.putExtra("Longitude", "null");
 		}
 		catch (java.io.IOException e)
-		{Toast.makeText(this, R.string.no_internal, Toast.LENGTH_LONG);}
+		{Log.e(TAG, e.getMessage());}
 		finally
 		{}
 	}
 	public void launchAffirm(View v)
 	{
-		startActivity(mapIntent);
-		finish();
+		startActivity(mapIntent);		
 	}
 
 	public void skipBatchPic(View v)
@@ -160,9 +159,9 @@ public class GIScraper extends Activity
 		return result;
 	};
 }
+	
 
-
-class JPGFileFilter implements FileFilter
+class JPGFileFilter extends Activity implements FileFilter
 {
 
 	@Override

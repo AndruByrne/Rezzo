@@ -37,6 +37,10 @@
 				</intent-filter>
 			</activity>
 		<activity
+			android:name=".PointDetail"
+			android:label="@string/PointDetail_title" >
+		</activity>
+		<activity
 			android:name=".GIScraper"
 			android:label="@string/GIScraper_title" >
 		</activity>

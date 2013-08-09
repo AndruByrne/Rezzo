@@ -13,19 +13,22 @@ import com.google.android.gms.maps.GoogleMap.CancelableCallback;
 import android.graphics.Interpolator;
 import android.content.*;
 import com.google.android.gms.common.*;
+import android.util.*;
 
 public class MapAffirm extends Activity
 {
 	//  private ImageView imageView;
 	private GoogleMap mMap;
 	LatLng latLng;
+	LatLng newLatLng;
 	CameraPosition cameraPosition;
 	int aniStep = 1;
-	Intent homeIntent;
-	Intent batchIntent;
+	Intent detailIntent;
 	Intent intent;
 	Bundle bundle;
 	boolean batch;		
+	Marker marker;
+	private final String TAG = getClass().getSimpleName();
 	
     @Override
 	public void onCreate(Bundle savedInstanceState)
@@ -33,7 +36,7 @@ public class MapAffirm extends Activity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.map_affirm);
 		try{MapsInitializer.initialize(this);}
-		catch (GooglePlayServicesNotAvailableException impossible){	/* Impossible */	}
+		catch (GooglePlayServicesNotAvailableException impossible){	/* Impossible */ Log.e(TAG, "the impossible occurred");}
 	    intent = this.getIntent();
 		latLng = new LatLng(intent.getDoubleExtra("Latitude", 0.0), intent.getDoubleExtra("Longitude", 0.0));
 		mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
@@ -42,26 +45,24 @@ public class MapAffirm extends Activity
 																 .zoom(6)
 																 .bearing(60)
 																 .tilt(60)
-																 .build()), myCancelableCallback);
+																 .build()), cancelableCallback);
 
-		mMap.addMarker(new MarkerOptions()
+		marker = mMap.addMarker(new MarkerOptions()
+		               .draggable(true)
 					   .position(latLng)
 					   .title("Location of Photographer"));
 
 	}
+	@Override
 	public void onResume(){
 		super.onResume();
-		homeIntent = new Intent(this, Home.class);
-		batchIntent = new Intent(this, GIScraper.class);
+		detailIntent = new Intent(this, PointDetail.class);
 		intent = this.getIntent();
 		bundle = intent.getExtras();
-		batch = intent.getBooleanExtra("batch", false);	
-		homeIntent.putExtras(bundle);
-		batchIntent.putExtras(bundle);
-		
+		detailIntent.putExtras(bundle);
 	}
 
-	public CancelableCallback myCancelableCallback = new CancelableCallback(){
+	public CancelableCallback cancelableCallback = new CancelableCallback(){
 		
 		@Override
 		public void onFinish()
@@ -73,7 +74,7 @@ public class MapAffirm extends Activity
 						 .zoom(2*aniStep)
 						 .bearing(40*aniStep)
 						 .tilt(60)
-						 .build()), myCancelableCallback);
+						 .build()), cancelableCallback);
 			} else {mMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.builder()
 																			 .target(latLng)
 																			 .zoom(18)
@@ -90,42 +91,10 @@ public class MapAffirm extends Activity
 
 	public void goodPoint(View v)
 	{
-		if(batch){
-			Toast.makeText(this, "filepath: "+intent.getStringExtra("filepath"), Toast.LENGTH_LONG).show();
-		//	deleteFile(intent.getStringExtra("filepath"));
-		} else startActivity(homeIntent);
+		newLatLng = marker.getPosition();
+		detailIntent.putExtra("Latitude", newLatLng.latitude);
+		detailIntent.putExtra("Longitude", newLatLng.longitude);
+		startActivity(detailIntent);
 		finish();
 	}
-
-	public void animateMarker(final Marker marker, final LatLng toPosition,
-							  final boolean hideMarker)
-	{
-        final Handler handler = new Handler();
-        final long start = SystemClock.uptimeMillis();
-        Projection proj = mMap.getProjection();
-        Point startPoint = proj.toScreenLocation(marker.getPosition());
-        final LatLng startLatLng = proj.fromScreenLocation(startPoint);
-        final long duration = 500;
-
-        final LinearInterpolator interpolator = new LinearInterpolator();
-
-        handler.post(new Runnable() {
-				@Override
-				public void run()
-				{
-					long elapsed = SystemClock.uptimeMillis() - start;
-					float t = interpolator.getInterpolation((float) elapsed
-															/ duration);
-					double lng = t * toPosition.longitude + (1 - t)
-                        * startLatLng.longitude;
-					double lat = t * toPosition.latitude + (1 - t)
-                        * startLatLng.latitude;
-					marker.setPosition(new LatLng(lat, lng));
-
-					if (t < 1.0) handler.postDelayed(this, 16); //send again in 16 ms
-					else if (hideMarker) marker.setVisible(false);
-					else marker.setVisible(true);
-				}
-			});
-    }
 }

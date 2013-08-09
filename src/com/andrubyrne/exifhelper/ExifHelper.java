@@ -31,10 +31,10 @@ public class ExifHelper {
     private String gpsAltitude = null;
     private String gpsAltitudeRef = null;
     private String gpsDateStamp = null;
-    private String gpsLatitude = null;
-    private String gpsLatitudeRef = null;
-    private String gpsLongitude = null;
-    private String gpsLongitudeRef = null;
+    public String gpsLatitude = null;
+    public String gpsLatitudeRef = null;
+    public String gpsLongitude = null;
+    public String gpsLongitudeRef = null;
     private String gpsProcessingMethod = null;
     private String gpsTimestamp = null;
     private String iso = null;
@@ -90,34 +90,34 @@ public class ExifHelper {
         this.orientation = inFile.getAttribute(ExifInterface.TAG_ORIENTATION);
         this.whiteBalance = inFile.getAttribute(ExifInterface.TAG_WHITE_BALANCE);
     }
-    public String getGpsDateStamp(){
-		return this.gpsDateStamp;
-	}
-    public String getGpsLatitude(){
-		return this.gpsLatitude;
-	}
-	public String getGpsLatitudeRef(){
-		return this.gpsLatitudeRef;
-	}
-	public String getGpsLongitude(){
-		return this.gpsLongitude;
-	}
-	public String getGpsLongitudeRef(){
-		return this.gpsLongitudeRef;
-	}	
-	public void setGpsLatitude(String latitude){
-		this.gpsLatitude = latitude;
-	}
-	public void setGpsLatitudeRef(String latitudeRef){
-		this.gpsLatitudeRef = latitudeRef;
-	}
-	public void setGpsLongitude(String longitude){
-		this.gpsLongitude = longitude;
-	}
-	public void setGpsLongitudeRef(String longitudeRef){
-		this.gpsLongitudeRef = longitudeRef;
-	}
-	
+//    public String getGpsDateStamp(){
+//		return this.gpsDateStamp;
+//	}
+//    public String getGpsLatitude(){
+//		return this.gpsLatitude;
+//	}
+//	public String getGpsLatitudeRef(){
+//		return this.gpsLatitudeRef;
+//	}
+//	public String getGpsLongitude(){
+//		return this.gpsLongitude;
+//	}
+//	public String getGpsLongitudeRef(){
+//		return this.gpsLongitudeRef;
+//	}	
+//	public void setGpsLatitude(String latitude){
+//		this.gpsLatitude = latitude;
+//	}
+//	public void setGpsLatitudeRef(String latitudeRef){
+//		this.gpsLatitudeRef = latitudeRef;
+//	}
+//	public void setGpsLongitude(String longitude){
+//		this.gpsLongitude = longitude;
+//	}
+//	public void setGpsLongitudeRef(String longitudeRef){
+//		this.gpsLongitudeRef = longitudeRef;
+//	}
+//	
 	/**
      * Writes the previously stored EXIF data to the output file.
      *

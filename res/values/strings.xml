@@ -4,11 +4,21 @@
     <string name="hello">Hello World, MainActivity!</string>
     <string name="app_name">Rezzo</string>
 	<string name="Home_title">Rezzo</string>
-    <string name="from_photo_button">Create Reference Image</string>
+    <string name="select_create_button">Create Reference Image</string>
+	<string name="select_batch_button">Process Cached Images</string>
+	<string name="del_pic_button">Delete Picture</string>
+	<string name="skip_pic_button">Skip Picture</string>
 	<string name="MapAffirm_title">Rezzo GIS adjustment</string>
     <string name="GIScraper_title">Initial GIS data</string>
+    <string name="PointDetail_title">Name the Point</string>	
 	<string name="no_wifi">No Wi-Fi found, saving file to external storage</string>
+	<string name="no_gps_yet">No GPS signal found; try waiting for a moment on the main screen before trying again</string>
+	<string name="gps_found">Found GPS</string>
 	<string name="no_internal">Sorry, could not find an internal file; oh god, why have you abandoned me?</string>
 	<string name="no_cache">No cached reference images</string>
 	<string name="batch_compete">Reference Image Batch Compete</string>
+	<string name="map_instructions">On the following map, please refine or define this calculation; if needed, move the indicator with a long press and press the button on the upper right.</string>
+	<string name="final_gis_text">Please name the location at </string>
+	<string name="prefs_name">Preferences</string>
+	
 </resources>

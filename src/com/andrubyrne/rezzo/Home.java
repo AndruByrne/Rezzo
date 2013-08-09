@@ -30,28 +30,30 @@ import android.util.*;
 import android.view.*;
 import android.widget.*;
 import com.andrubyrne.exifhelper.*;
+import com.andrubyrne.utils.*;
 import java.io.*;
 
 public class Home extends Activity
 { 
 	private final int CAMERA_REQUEST = 2885;
-	private static final int TWO_MINUTES = 1000 * 60 * 2;
-	private final String TAG = getClass().getName();
+	private final String TAG = getClass().getSimpleName();
 	ImageView imageView1;
 	ExifHelper mEH = new ExifHelper();
+	Utils utils = new Utils();
 	Time today = new Time(Time.getCurrentTimezone());
 	LocationManager locationManager;
 	Location bestLocation;
-	private static StringBuilder stringBuilder;
 	private static String PATH = Environment.getExternalStorageDirectory().getPath() + "/Rezzo/";
-	File outDir = new File(PATH+"/");
+	File outDir = new File(PATH + "/");
+	File cameraPic;
+
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-		imageView1 = (ImageView)findViewById(R.id.imageView1);
+		cameraPic = new File(getFilesDir(), "newImage.jpg");
 	}
     @Override
 	public void onResume()
@@ -60,10 +62,11 @@ public class Home extends Activity
 		//todo: check for wifi; if and if wifi pref not set to ignore, then notify
 //		if(isConnected(this));
 		locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-		String locationProvider = LocationManager.NETWORK_PROVIDER;
-		bestLocation = locationManager.getLastKnownLocation(locationProvider);
-		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 900000, 100, locationListener); // 15min
-		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 500000, 0, locationListener);
+//just changedthis to gps_proviuder
+		//	String locationProvider = LocationManager.GPS_PROVIDER;
+//		bestLocation = locationManager.getLastKnownLocation(locationProvider);
+		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 100, locationListener); // 15min
+		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 500, 0, locationListener);
 	}
 	public void fromPhoto(View v)
 	{
@@ -72,7 +75,7 @@ public class Home extends Activity
 		if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
 		{
 			Intent i = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-			i.putExtra(MediaStore.EXTRA_OUTPUT, MyFileContentProvider.CONTENT_URI);		
+			i.putExtra(MediaStore.EXTRA_OUTPUT, FileContentProvider.CONTENT_URI);		
 			if (pm.hasSystemFeature(PackageManager.FEATURE_CAMERA))
 				i.putExtra("camerasensortype", 1); // call the rear camera			
 			else if (pm.hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT))
@@ -83,7 +86,7 @@ public class Home extends Activity
 			i.putExtra("showActionIcons", false);
 			startActivityForResult(i, CAMERA_REQUEST);	
 		}		
-		else askForGPS();
+		else utils.askForGPS(this);
 
 		locationManager = null;	
 	}
@@ -93,7 +96,6 @@ public class Home extends Activity
 		Intent i = new Intent(this, GIScraper.class);
 		i.putExtra("batch", true);
 		startActivity(i);
-		//do the intent here, add extras to determine layout
 	}
 
 	@Override
@@ -103,37 +105,41 @@ public class Home extends Activity
 		Log.i(TAG, "Receive the camera result");
 		if (resultCode == RESULT_OK && requestCode == CAMERA_REQUEST)
 		{
-			//need to add a preference for using gsm for map connection before demo
-			//if wifi service, 
-			if (isConnected(this))
+			if (bestLocation == null) Toast.makeText(this, R.string.no_gps_yet, Toast.LENGTH_LONG).show();
+			else 
 			{
-				//	attach GIS data by getLatitude()&&
-				File out = new File(getFilesDir(), "newImage.jpg");
-                writeExif(out);
-
-				Intent i = new Intent(this, GIScraper.class);
-				i.putExtra("batch", false);
-				startActivity(i);
-			}
-			else
-			{//save image file to external storage
-				Toast.makeText(getBaseContext(), R.string.no_wifi, Toast.LENGTH_LONG).show();
-				try{copyImage();}
-				catch (IOException e)
+				//need to add a preference for using gsm for map connection before demo
+				//if wifi service, 
+				if (utils.isConnected(this))
 				{
-					Toast.makeText(this, R.string.no_internal, Toast.LENGTH_SHORT).show();
-					Log.e(getBaseContext().toString(), e.toString());
+					//	attach GIS data by getLatitude()&&
+					File out = new File(getFilesDir(), "newImage.jpg");
+					writeExif(out);
+
+					Intent i = new Intent(this, GIScraper.class);
+					i.putExtra("batch", false);
+					startActivity(i);
 				}
- 			}
+				else
+				{//save image file to external storage
+					Toast.makeText(getBaseContext(), R.string.no_wifi, Toast.LENGTH_LONG).show();
+					try {writeExif(utils.copyImage(cameraPic, outDir));}
+					catch (IOException e) {Log.e(TAG, e.toString());}
+				}
+			}
 		}
 	}
 
 	LocationListener locationListener = new LocationListener() {
 		public void onLocationChanged(Location location)
 		{
-			if (isBetterLocation(location, bestLocation)) bestLocation = location;
+			if (utils.isBetterLocation(location, bestLocation))
+			{
+				if (bestLocation == null) foundGPS();
+				bestLocation = location;
+			}
 		}
-
+ 
 		public void onStatusChanged(String provider, int status, Bundle extras)
 		{}
 
@@ -143,196 +149,26 @@ public class Home extends Activity
 		public void onProviderDisabled(String provider)
 		{}
 	};
-
-	private static boolean isConnected(Context context)
-	{
-		ConnectivityManager connectivityManager = (ConnectivityManager)
-			context.getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo networkInfo = null;
-		if (connectivityManager != null)
-		{
-			networkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-		}
-		return networkInfo == null ? false : networkInfo.isConnected();
+	
+	private void foundGPS(){
+		utils.informOfGPS(this);
 	}
-
-	/** Determines whether one Location reading is better than the current Location fix
-	 * @param location  The new Location that you want to evaluate
-	 * @param currentBestLocation  The current Location fix, to which you want to compare the new one
-	 */
-	protected boolean isBetterLocation(Location location, Location currentBestLocation)
+	
+	private void writeExif(File outFile)
 	{
-		if (currentBestLocation == null)
-		{
-			// A new location is always better than no location
-			return true;
-		}
-
-		// Check whether the new location fix is newer or older
-		long timeDelta = location.getTime() - currentBestLocation.getTime();
-		boolean isSignificantlyNewer = timeDelta > TWO_MINUTES;
-		boolean isSignificantlyOlder = timeDelta < -TWO_MINUTES;
-		boolean isNewer = timeDelta > 0;
-
-		// If it's been more than two minutes since the current location, use the new location
-		// because the user has likely moved
-		if (isSignificantlyNewer)
-		{
-			return true;
-			// If the new location is more than two minutes older, it must be worse
-		}
-		else if (isSignificantlyOlder)
-		{
-			return false;
-		}
-
-		// Check whether the new location fix is more or less accurate
-		int accuracyDelta = (int) (location.getAccuracy() - currentBestLocation.getAccuracy());
-		boolean isLessAccurate = accuracyDelta > 0;
-		boolean isMoreAccurate = accuracyDelta < 0;
-		boolean isSignificantlyLessAccurate = accuracyDelta > 200;
-
-		// Check if the old and new location are from the same provider
-		boolean isFromSameProvider = isSameProvider(location.getProvider(),
-													currentBestLocation.getProvider());
-
-		// Determine location quality using a combination of timeliness and accuracy
-		if (isMoreAccurate)
-		{
-			return true;
-		}
-		else if (isNewer && !isLessAccurate)
-		{
-			return true;
-		}
-		else if (isNewer && !isSignificantlyLessAccurate && isFromSameProvider)
-		{
-			return true;
-		}
-		return false;
-	}
-
-	synchronized public static final String convertToRational(double latitude)
-	{
-		stringBuilder = new StringBuilder(20);
-        latitude = Math.abs(latitude);
-        int degree = (int) latitude;
-        latitude *= 60;
-        latitude -= (degree * 60.0d);
-        int minute = (int) latitude;
-        latitude *= 60;
-        latitude -= (minute * 60.0d);
-        int second = (int) (latitude * 1000.0d);
-
-        stringBuilder.setLength(0);
-        stringBuilder.append(degree);
-        stringBuilder.append("/1,");
-        stringBuilder.append(minute);
-        stringBuilder.append("/1,");
-        stringBuilder.append(second);
-        stringBuilder.append("/1000,");
-        return stringBuilder.toString();
-    }
-
-	/** Checks whether two providers are the same */
-	private boolean isSameProvider(String provider1, String provider2)
-	{
-		if (provider1 == null)
-		{
-			return provider2 == null;
-		}
-		return provider1.equals(provider2);
-	}
-
-	public static String latitudeRef(double latitude)
-	{
-        return latitude < 0.0d ?"S": "N";
-    }
-
-    /**
-     * returns ref for latitude which is S or N.
-     * @param latitude
-     * @return S or N
-     */
-    public static String longitudeRef(double longitude)
-	{
-        return longitude < 0.0d ?"W": "E";
-    }
-
-	public void askForGPS()
-	{
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle("Location Manager");
-		builder.setMessage("Please enable GPS, then press the back key");
-		builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which)
-				{
-					Intent i = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-					startActivity(i);
-				}
-			});
-		builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which)
-				{
-			        Toast.makeText(getBaseContext(), "GPS required for this app", Toast.LENGTH_SHORT).show();
-					//				Intent i = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-					//				startActivity(i);
-	                finish();
-				}
-			});
-		builder.create().show();
-	}
-
-	private void writeExif(File outFile){
 		try
 		{
 			mEH.createOutFile(outFile.getAbsolutePath());
-			mEH.setGpsLatitude(convertToRational(bestLocation.getLatitude()));	
-			mEH.setGpsLongitude(convertToRational(bestLocation.getLongitude()));
-			mEH.setGpsLatitudeRef(latitudeRef(bestLocation.getLatitude()));
-			mEH.setGpsLongitudeRef(longitudeRef(bestLocation.getLongitude()));
+			mEH.gpsLatitude = utils.convertToRational(bestLocation.getLatitude());	
+			mEH.gpsLongitude = utils.convertToRational(bestLocation.getLongitude());
+			mEH.gpsLatitudeRef = utils.latitudeRef(bestLocation.getLatitude());
+			mEH.gpsLongitudeRef = utils.longitudeRef(bestLocation.getLongitude());
 			mEH.writeExifData();
 		}
 		catch (IOException e)
 		{Toast.makeText(this, R.string.no_internal, Toast.LENGTH_LONG);}
 		finally
 		{}
-	}
-	private void copyImage() 
-	throws IOException
-	{ 
-		File outFile = new File(PATH + "/" + DateFormat.format("dd-MM-yyyy:hh:mm:ss", new java.util.Date()).toString() + ".jpg");
-	//	Toast.makeText(this, "savefile: " + outFile.getAbsolutePath().toString(), Toast.LENGTH_SHORT).show();
-		if (!outDir.exists())
-		{
-			try
-			{
-				outDir.mkdirs();
-			}
-			catch (SecurityException e)
-			{
-				Log.e(TAG, "unable to write on the sd card " + e.toString());
-			}
-		}
-		File inFile = new File(getFilesDir(), "newImage.jpg");
-		OutputStream out = new FileOutputStream(outFile, false);
-		InputStream in = new FileInputStream(inFile);
-
-		byte[] buffer = new byte[1024]; 
-		int read; 
-		while ((read = in.read(buffer)) != -1)
-		{ 
-			out.write(buffer, 0, read); 
-		} 
-
-		in.close(); 
-		in = null; 
-		out.flush(); 
-		out.close(); 
-		out = null; 
-		writeExif(outFile);
 	}
 
 	@Override
@@ -346,7 +182,8 @@ public class Home extends Activity
 	protected void onDestroy()
 	{
 		super.onDestroy();
-		locationManager.removeUpdates(locationListener);
+		//thisiswrong
+//		locationManager.removeUpdates(locationListener);
 		imageView1 = null;
 	}
 }

@@ -22,7 +22,7 @@
 		android:layout_width="96dp"
 		android:layout_height="wrap_content"
 		android:layout_below="@id/launchAffirmBatch"
-		android:text="Skip"
+		android:text="@string/skip_pic_button"
 		android:onClick="skipBatchPic" />
 	<Button
 		android:id="@+id/deletePic"
@@ -30,7 +30,7 @@
 		android:layout_height="wrap_content"
 		android:layout_alignParentLeft="true"
 		android:layout_below="@id/skipPic"
-		android:text="Delete"
+		android:text="@string/del_pic_button"
 		android:onClick="deleteBatchPic" />
 	<Button
 		android:id="@+id/exitBatch" 	
