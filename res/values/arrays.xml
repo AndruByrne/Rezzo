@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array
+        name="regions_array">
+        <item>Dodoma</item>
+        <item>Arusha</item>
+        <item>Kilimanjaro</item>
+        <item>Tanga</item>
+        <item>Morogoro</item>
+        <item>Dar es Salaam</item>
+        <item>Lindi</item>
+        <item>Mtwara</item>
+		<item>Ruvuma</item>
+		<item>Iringa</item>
+		<item>Mbeya</item>
+		<item>Singida</item>
+		<item>Tabora</item>
+		<item>Rukwa</item>
+        <item>Kigoma</item>
+        <item>Shinyanga</item>
+		<item>Kagera</item>
+		<item>Mwanza</item>
+        <item>Mara</item>
+        <item>Manyara</item>
+        <item>Njombe</item>
+        <item>Katavi</item>
+        <item>Simiyu</item>
+        <item>Geita</item>		
+        <item>Zanzibar North</item>
+		<item>Zanzibar South</item>
+        <item>Zanzibar Urban/West</item>
+		<item>Pemba North</item>
+		<item>Pemba South</item>
+		<item>none</item>		
+    </string-array>
+</resources>

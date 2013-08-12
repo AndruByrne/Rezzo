@@ -6,23 +6,39 @@
 	<string name="Home_title">Rezzo</string>
     <string name="select_create_button">Create Reference Image</string>
 	<string name="select_batch_button">Process Cached Images</string>
+	<string name="select_gallery_button">Process Images from Gallery</string>
 	<string name="del_pic_button">Delete Picture</string>
 	<string name="skip_pic_button">Skip Picture</string>
 	<string name="MapAffirm_title">Rezzo GIS adjustment</string>
     <string name="GIScraper_title">Initial GIS data</string>
     <string name="PointDetail_title">Name the Point</string>	
-	<string name="no_wifi">No Wi-Fi found, saving file to external storage</string>
+	<string name="no_wifi_photo">No Wi-Fi found, saving file to external storage</string>
+	<string name="no_wifi_gallery">No Wi-Fi found; you cannot provide sufficient data integrity to continue</string>	
 	<string name="no_gps_yet">No GPS signal found; try waiting for a moment on the main screen before trying again</string>
-	<string name="gps_found">Found GPS</string>
+	<string name="gps_found">Found GIS Provider</string>
 	<string name="no_internal">Sorry, could not find an internal file; oh god, why have you abandoned me?</string>
 	<string name="no_cache">No cached reference images</string>
 	<string name="batch_compete">Reference Image Batch Compete</string>
 	<string name="map_instructions">On the following map, please refine or define this calculation; if needed, move the indicator with a long press and press the button on the upper right.</string>
 	<string name="final_gis_text">Please name the location at </string>
 	<string name="prefs_name">Preferences</string>
+	<string name="bad_pic">Cannot reference internal files, please copy picture to sdcard and try again</string>
 	<string name="use_gsm">Use GSM Radio</string>
 	<string name="use_gsm_summ">Attempt to use cellular network (only recommended for areas with reliable service)</string>
 	<string name="goto_source">View source code</string>
-	
+	<string name="settings">Settings</string>
+	<string name="noti_title">Rezzo batch function available</string>
+	<string name="noti_content_title">Rezzo</string>
+	<string name="noti_content_text">Use wifi to process cached reference images</string>
+	<string name="ask_for_gps">Please enable GPS, then press the back key</string>
+	<string name="gps_req">GPS required for this app</string>
+	<string name="loc_man">Location Manager</string>
+	<string name="no_exif">this picture has no useful GIS data, press "back" to return to the first page or "OK" to continue (not recommended).</string>
+	<string name="hint_name_point">Name</string>
+	<string name="resources_title">Resources</string>
+	<string name="hint_nat_res">Natural Resources</string>
+	<string name="hint_inf_res">Infrastructure Resources</string>
+	<string name="hint_skl_res">Skilled Resources</string>
+	<string name="hint_notes">Skilled Resources</string>
 	
 </resources>

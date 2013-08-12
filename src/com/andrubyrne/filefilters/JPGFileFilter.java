@@ -3,7 +3,7 @@ import java.io.*;
 import android.app.*;
 
 
-class JPGFileFilter extends Activity implements FileFilter
+public class JPGFileFilter extends Activity implements FileFilter
 {
 
 	@Override

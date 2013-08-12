@@ -6,30 +6,83 @@
 	android:orientation="vertical" >
 	<TextView
 		android:id="@+id/finalGISdata"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:layout_centerHorizontal="true" />
-	<EditText
-		android:id="@+id/namePoint"
 		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_below="@id/finalGISdata"	
-		android:singleLine="true"
-		android:inputType="text"
-		android:imeOptions="actionDone"
-		android:layout_centerHorizontal="true" /> 	
+		android:layout_alignParentLeft="true"
+ 		android:layout_height="wrap_content"
+		android:layout_centerHorizontal="true" />
 	<Button
 		android:id="@+id/doneNaming"
-	    android:layout_toRightOf="@id/namePoint"
+	    android:layout_toRightOf="@id/finalGISdata"
 		android:layout_width="96dp"
 		android:layout_height="wrap_content"
 		android:text="OK"
 		android:onClick="doneNaming" />
+	<EditText
+		android:id="@+id/namePoint"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:singleLine="true"
+		android:inputType="text"
+		android:hint="@string/hint_name_point"
+		android:layout_below="@id/finalGISdata"
+		android:imeOptions="actionNext" /> 	
+	<TextView
+		android:id="@+id/regionLabel"
+		android:text="Region (from settings): "
+		android:layout_width="128dp"
+		android:layout_height="wrap_content"
+		android:layout_alignParentLeft="true"
+    	android:layout_below="@id/namePoint" />
+	<TextView
+		android:id="@+id/regionName"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"		
+    	android:layout_below="@id/regionLabel" />
+	<TextView
+		android:id="@+id/resourcesTitle"
+		android:text="@string/resources_title"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"		
+    	android:layout_below="@id/regionName" />
+	<EditText
+		android:id="@+id/nat_res"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/resourcesTitle"
+		android:singleLine="true"
+		android:imeOptions="actionNext"
+		android:hint="@string/hint_nat_res" />	
+	<EditText
+		android:id="@+id/inf_res"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/resourcesTitle"
+		android:singleLine="true"
+		android:imeOptions="actionNext"
+		android:layout_toRightOf="@id/nat_res"
+		android:hint="@string/hint_inf_res" />	
+	<EditText
+		android:id="@+id/skl_res"
+		android:layout_width="wrap_content"
+		android:layout_below="@id/resourcesTitle"
+		android:layout_height="wrap_content"
+		android:layout_toRightOf="@id/inf_res"
+		android:singleLine="true"
+		android:imeOptions="actionNext"
+		android:hint="@string/hint_skl_res" />	
+	<EditText
+		android:id="@+id/notesPoint"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignParentLeft="true"
+		android:layout_below="@id/skl_res"
+		android:imeOptions="actionDone"
+		android:hint="@string/hint_notes" />		
 	<ImageView
 		android:id="@+id/finalImageView"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_below="@id/namePoint"
+		android:layout_below="@id/notesPoint"
 		android:layout_centerHorizontal="true" />
 
 

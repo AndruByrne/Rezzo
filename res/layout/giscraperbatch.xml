@@ -4,45 +4,64 @@
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent"
 	android:orientation="vertical" >
-	<TextView
-		android:id="@+id/mapInstructionBatch"
+	<ImageView
+		android:id="@+id/smallerImageViewBatch"
+		android:layout_below="@+id/GIScraperLinearlayout2"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:layout_centerHorizontal="true" />
+	<LinearLayout
+		android:id="@+id/GIScraperLinearlayout"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:layout_centerHorizontal="true" />
-	<Button
-		android:id="@+id/launchAffirmBatch"
-		android:layout_width="96dp"
-		android:layout_height="wrap_content"
-		android:layout_alignParentLeft="true"
-		android:layout_below="@id/mapInstructionBatch"
-		android:text="OK"
-		android:onClick="launchAffirm" />
-	<Button
-		android:id="@+id/skipPic"
-		android:layout_width="96dp"
-		android:layout_height="wrap_content"
-		android:layout_toRightOf="@id/launchAffirmBatch"
-		android:text="@string/skip_pic_button"
-		android:onClick="skipBatchPic" />
-	<Button
-		android:id="@+id/deletePic"
-		android:layout_width="96dp"
-		android:layout_height="wrap_content"
-		android:layout_toRightOf="@id/skipPic"
-		android:text="@string/del_pic_button"
-		android:onClick="deleteBatchPic" />
-	<Button
-		android:id="@+id/exitBatch" 	
-		android:layout_width="96dp"
-		android:layout_height="wrap_content"
-		android:layout_toRightOf="@id/deletePic"
-		android:text="Exit"
-		android:onClick="exitBatch" />
- 	<ImageView
-		android:id="@+id/smallerImageViewBatch"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_below="@id/launchAffirmBatch"
-		android:layout_centerHorizontal="true" />
+		android:orientation="horizontal" >
+		<TextView
+			android:id="@+id/mapInstructionBatch"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_centerHorizontal="true" />
 
+	</LinearLayout>
+	<LinearLayout
+		android:id="@id/GIScraperLinearlayout2"
+		android:layout_width="fill_parent"
+		android:layout_below="@id/GIScraperLinearlayout"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal" >
+		<Button
+			android:id="@+id/launchAffirmBatch"
+			android:layout_width="wrap_content"
+			android:layout_alignParentLeft="true"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+			android:text="OK"
+			android:onClick="launchAffirm" />
+		<Button
+			android:id="@+id/skipPic"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_toRightOf="@id/launchAffirmBatch"
+			android:layout_weight="3"
+			android:text="@string/skip_pic_button"
+			android:onClick="skipBatchPic" />
+		<Button
+			android:id="@+id/deletePic"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_toRightOf="@id/skipPic"
+			android:layout_weight="3"
+			android:text="@string/del_pic_button"
+			android:onClick="deleteBatchPic" />
+		<Button
+			android:id="@+id/exitBatch" 	
+			android:layout_width="wrap_content"
+			android:layout_weight="3"
+			android:layout_height="wrap_content"
+			android:layout_toRightOf="@id/deletePic"
+			android:text="Exit"
+			android:onClick="exitBatch" />
+	</LinearLayout>
+
+
+	
 </RelativeLayout>

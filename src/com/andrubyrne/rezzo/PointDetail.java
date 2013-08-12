@@ -1,17 +1,14 @@
 package com.andrubyrne.rezzo;
 import android.app.*;
 import android.content.*;
-import android.os.*;
-import com.google.android.gms.maps.*;
-import android.widget.*;
-import android.location.*;
 import android.graphics.*;
-import android.view.inputmethod.EditorInfo;
-import android.view.KeyEvent;
-import android.view.*;
-import java.io.*;
-import java.util.*;
+import android.os.*;
+import android.preference.*;
 import android.util.*;
+import android.view.*;
+import android.widget.*;
+import java.io.*;
+import java.net.*;
 
 public class PointDetail extends Activity
 {
@@ -21,11 +18,17 @@ public class PointDetail extends Activity
 	Bundle bundle;
 	boolean batch;	
 	TextView finalGIStext;
-	EditText namingPlace;
+	TextView regionName;
+	EditText namePoint;
+	EditText notesPoint;
+	EditText resNat;
+	EditText resInf;
+	EditText resSkl;
 	ImageView imageView;
 	Bitmap bitmap;
 	private final String TAG = getClass().getSimpleName();
 	private String filepath;
+	SharedPreferences preferences;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -33,7 +36,12 @@ public class PointDetail extends Activity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.point_detail);
 		finalGIStext = (TextView)findViewById(R.id.finalGISdata);
-		namingPlace = (EditText)findViewById(R.id.namePoint);
+		regionName = (TextView)findViewById(R.id.regionName);
+		namePoint = (EditText)findViewById(R.id.namePoint);
+		notesPoint = (EditText)findViewById(R.id.notesPoint);
+		resNat = (EditText)findViewById(R.id.nat_res);
+		resInf = (EditText)findViewById(R.id.inf_res);
+		resSkl = (EditText)findViewById(R.id.skl_res);
 		imageView = (ImageView)findViewById(R.id.finalImageView);
     }
 
@@ -51,27 +59,17 @@ public class PointDetail extends Activity
 		batch = intent.getBooleanExtra("batch", false);
 		finalGIStext.setText(getString(R.string.final_gis_text) +
 							 "Latitude: " + intent.getDoubleExtra("Latitude", 0.0) + " Longitude: " + intent.getDoubleExtra("Longitude", 0.0));
-	    bitmap = BitmapFactory.decodeFile(intent.getStringExtra("filepath"));
+  		preferences = PreferenceManager.getDefaultSharedPreferences(this); 
+		Log.e(TAG, preferences.getString("region", "none"));
+		regionName.setText(preferences.getString("region", "none"));
+		bitmap = BitmapFactory.decodeFile(intent.getStringExtra("filepath"));
 		imageView.setImageBitmap(bitmap);
 
 	}
 
 	public void doneNaming(View v)
 	{
-		File outFile = new File(filepath + ".json");
-		try
-		{
-			OutputStream out = new FileOutputStream(outFile, false);
-			writeJsonStream(out);
-			out.flush();
-		    out.close();
-			out = null;
-		}
-		catch (FileNotFoundException e)
-		{Log.e(TAG, "json not opened");}		
-		catch (IOException e)
-		{Log.e(TAG, "json not written");}
-
+		new PostJSONTask().execute();
 		if (batch)
 		{
 			deleteFile(filepath);
@@ -79,24 +77,85 @@ public class PointDetail extends Activity
 		}
 	    finish();
 	}
+	private class PostJSONTask extends AsyncTask<Void, Void, Boolean> {
+		protected Boolean doInBackground(Void... params) {
+		     if(pushToServer()) return true;
+		     else return false;
+		}
 
+//		protected void onProgressUpdate(Integer... progress) {
+//			setProgressPercent(progress[0]);
+//		}
+//
+		protected void onPostExecute() {
+			Toast.makeText(getBaseContext(), "Successful", Toast.LENGTH_SHORT).show();
+		}
+	}
 	public void writeJsonStream(OutputStream out) throws IOException
 	{
 		JsonWriter writer = new JsonWriter(new OutputStreamWriter(out, "UTF-8"));
-		writer.setIndent("  ");
+		writer.setIndent("    ");
 		writer.beginObject();
-		writer.name("Position Label").value(namingPlace.getText().toString());
-		writer.name("GIS coordinates");
-		writeGIS(writer);
+//		writer.name("GIS coordinates");
+		writer.name("latitude").value(intent.getDoubleExtra("Latitude", 0.0)).toString();
+		writer.name("longitude").value(intent.getDoubleExtra("Longitude", 0.0)).toString();
+	//	writeGIS(writer);
+		writer.name("title").value(namePoint.getText().toString());
+        writer.name("notes").value(notesPoint.getText().toString());
+		writer.name("region").value(preferences.getString("region", "none"));
+        writer.name("resources");
+		writeRes(writer);
 		writer.endObject();
 		writer.close();
     }
 
-	public void writeGIS(JsonWriter writer) throws IOException
+	public void writeRes(JsonWriter writer) throws IOException
 	{
 		writer.beginObject();
-		writer.name("Latitude").value(intent.getDoubleExtra("Latitude", 0.0)).toString();
-		writer.name("Longitude").value(intent.getDoubleExtra("Longitude", 0.0)).toString();
+		writer.name("Natural Resources").value(resNat.getText().toString());
+		writer.name("Infrastructure Resources").value(resInf.getText().toString());
+		writer.name("Skilled Resources").value(resSkl.getText().toString());
 		writer.endObject();
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu)
+	{
+		MenuItem buttonSettings = menu.add(getString(R.string.settings));
+		buttonSettings.setIcon(R.drawable.ic_launcher);
+		buttonSettings.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER); //force overflow method
+		buttonSettings.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+
+				public boolean onMenuItemClick(MenuItem item)
+				{
+					Intent settingsIntent = new Intent(PointDetail.this, UserSettings.class);
+					PointDetail.this.startActivity(settingsIntent);
+					return false;
+				}
+			});
+		return true;
+	}
+
+
+	public boolean pushToServer()
+	{
+		try
+		{
+			HttpURLConnection httpcon = (HttpURLConnection) ((new URL("http://rezzo.herokuapp.com/ios").openConnection()));
+
+			httpcon.setDoOutput(true);
+			httpcon.setRequestProperty("Content-Type", "application/json");
+			httpcon.setRequestProperty("Accept", "application/json");
+			httpcon.setRequestMethod("POST");
+			httpcon.connect();
+
+			OutputStream os = httpcon.getOutputStream();
+			writeJsonStream(os);
+			os.close();
+			return true;
+		}
+		catch (IOException e)
+		{Log.e(TAG, e.toString());
+			return false;}
 	}
 }

@@ -7,7 +7,7 @@ import android.widget.*;
 import java.io.*;
 import android.graphics.*;
 import com.andrubyrne.exifhelper.ExifHelper;
-
+import com.andrubyrne.filefilters.*;
 import android.location.*;
 import android.provider.*;
 import android.util.*;
@@ -24,12 +24,13 @@ public class GIScraper extends Activity
 	private final String TAG = getClass().getSimpleName();
 	private static String PATH = Environment.getExternalStorageDirectory().getPath() + "/Rezzo/";
 	File inFile;
-	File outDir = new File(PATH+"/");
+	File outDir = new File(PATH + "/");
 	Intent intent;
 	Intent homeIntent;
 	Intent mapIntent;
 	ExifHelper mEH = new ExifHelper();
 	JPGFileFilter jpgFileFilter;
+
     public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
@@ -49,7 +50,7 @@ public class GIScraper extends Activity
 		}
 		batchIndex = 0;
 		jpgFileFilter = new JPGFileFilter();
-		
+
 	}	
 	public void onResume()
 	{
@@ -60,21 +61,36 @@ public class GIScraper extends Activity
 		mapIntent.putExtras(bundle);
 		if (batch)
 		{
-			File[] refImages = outDir.listFiles(jpgFileFilter);
+			Log.e(TAG, "got to first else");
+
+		    File[] refImages = outDir.listFiles(jpgFileFilter);
 			if (refImages.length == 0)
 			{	//check that there are files
 				Toast.makeText(this, R.string.no_cache, Toast.LENGTH_LONG).show();
 				startActivity(homeIntent);
 				finish();
-			
-			} else if(batchIndex >= refImages.length){ //stop at the end
+
+			}
+			else if (batchIndex >= refImages.length)
+			{ //stop at the end
 				Toast.makeText(this, R.string.batch_compete, Toast.LENGTH_LONG).show();
 			    startActivity(homeIntent);	
 				finish();
 			}
 			else inFile = refImages[batchIndex];
-			} 
-		else inFile = new File(getFilesDir(), "newImage.jpg");
+		} 
+		else try
+			{
+				inFile = new File(intent.getStringExtra("filepath"));
+				Log.e(TAG, "filepath = "+intent.getStringExtra("filepath"));
+				Log.e(TAG, "got to last else");
+			}
+			catch (NullPointerException e)
+			{
+				Toast.makeText(this, R.string.bad_pic, Toast.LENGTH_SHORT).show();
+			}
+
+
 		try
 		{ 
 			String filepath = inFile.getAbsolutePath();
@@ -95,10 +111,12 @@ public class GIScraper extends Activity
 				else Latitude = 0 - convertToDegree(latitude);
 				if (longitude_ref.equals("E")) Longitude = Math.abs(convertToDegree(longitude));
 				else Longitude = 0 - convertToDegree(longitude);
-			}
-			textView.setText("This picture seems to have been taken at " + 
-							 Latitude + " latitude and " + 
-							 Longitude + " longitude. "+getString(R.string.map_instructions));
+				textView.setText("This picture seems to have been taken at " + 
+								 Latitude + " latitude and " + 
+								 Longitude + " longitude. " + getString(R.string.map_instructions));
+
+        	}
+			else textView.setText(R.string.no_exif);
 			Bitmap mBitmap = BitmapFactory.decodeFile(inFile.getAbsolutePath());
 			imageView.setImageBitmap(mBitmap);
 			mapIntent.putExtra("filepath", inFile.getAbsolutePath());			
@@ -159,21 +177,21 @@ public class GIScraper extends Activity
 
 		return result;
 	};
-}
-	
-
-class JPGFileFilter extends Activity implements FileFilter
-{
-
 	@Override
-	public boolean accept(File pathname)
+	public boolean onCreateOptionsMenu(Menu menu)
 	{
-		String suffix = ".jpg";
-		if (pathname.getName().toLowerCase().endsWith(suffix))
-		{
-			return true;
-		}
-		return false;
-	}
+		MenuItem buttonSettings = menu.add(getString(R.string.settings));
+		buttonSettings.setIcon(R.drawable.ic_launcher);
+		buttonSettings.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER); //force overflow method
+		buttonSettings.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
 
+				public boolean onMenuItemClick(MenuItem item)
+				{
+					Intent settingsIntent = new Intent(GIScraper.this, UserSettings.class);
+					GIScraper.this.startActivity(settingsIntent);
+					return false;
+				}
+			});
+		return true;
+	}
 }

@@ -9,4 +9,11 @@
 		<intent android:action="android.intent.action.VIEW"
             android:data="http://www.github.com/AndruByrne/Rezzo" />
 	</Preference>
+	<ListPreference
+        android:key="region"
+        android:title="Region"
+        android:dialogTitle="Region"
+        android:entries="@array/regions_array"
+		android:entryValues="@array/regions_array"
+        android:defaultValue="none" />
 </PreferenceScreen>

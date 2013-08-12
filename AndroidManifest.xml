@@ -52,8 +52,12 @@
 			android:name=".UserSettings"
 			android:label="@string/MapAffirm_title" >
 		</activity>		
+		<activity
+			android:name="utils.Utils"
+			android:label="@string/Home_title" >
+		</activity>
 		<provider
-			android:name=".MyFileContentProvider"
+			android:name=".FileContentProvider"
 			android:authorities="com.andrubyrne.rezzo"
 			android:enabled="true"
 			android:exported="true"/>

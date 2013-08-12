@@ -18,5 +18,13 @@
 		android:layout_alignParentLeft="true"
 		android:layout_below="@+id/select_image"
 		android:text="@string/select_batch_button" 
+		android:onClick="fromBatch" />
+	<Button
+		android:id="@+id/select_gallery"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:layout_alignParentLeft="true"
+		android:layout_below="@+id/select_batch"
+		android:text="@string/select_gallery_button" 
 		android:onClick="fromGallery" />
 </RelativeLayout>
