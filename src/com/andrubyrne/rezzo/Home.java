@@ -136,7 +136,7 @@ public class Home extends Activity
 
 					Intent i = new Intent(this, GIScraper.class);
 					i.putExtra("batch", false);
-					i.putExtra("filepath", getFilesDir()+"/newImage.jpg");
+					i.putExtra("filepath", getFilesDir() + "/newImage.jpg");
 					startActivity(i);
 				}
 				else
@@ -151,32 +151,36 @@ public class Home extends Activity
 		}
 		else if (resultCode == RESULT_OK && requestCode == GALLERY_REQUEST)
 		{
-			Uri photoUri = data.getData();
-			if (photoUri != null)
+			if (utils.isConnected(this) || gsmUser)
 			{
-				try
+				Uri photoUri = data.getData();
+				if (photoUri != null)
 				{
+					try
+					{
 
-			//false on first button press		Log.e(TAG, "gallery request recievwed"); 
+						//false on first button press		Log.e(TAG, "gallery request recievwed"); 
+
+						String[] filePathColumn = {MediaStore.Images.Media.DATA};
+						Cursor cursor = getContentResolver().query(photoUri, filePathColumn, null, null, null); 
+						cursor.moveToFirst();
+						int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+						String filePath = cursor.getString(columnIndex);
+						cursor.close();
+
+						Intent i = new Intent(this, GIScraper.class);
+						i.putExtra("batch", false);
+						i.putExtra("filepath", filePath);
+						startActivity(i);
+					}
+					catch (Exception e)
+					{
+						Log.e(TAG, e.toString());
+					}
 					
-					String[] filePathColumn = {MediaStore.Images.Media.DATA};
-					Cursor cursor = getContentResolver().query(photoUri, filePathColumn, null, null, null); 
-					cursor.moveToFirst();
-					int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-					String filePath = cursor.getString(columnIndex);
-					cursor.close();
-
-					Intent i = new Intent(this, GIScraper.class);
-					i.putExtra("batch", false);
-					i.putExtra("filepath", filePath);
-					startActivity(i);
-				}
-				catch (Exception e)
-				{
-					Log.e(TAG, e.toString());
-				}
-
+				}			
 			}
+			else Toast.makeText(getBaseContext(), R.string.no_wifi_photo, Toast.LENGTH_LONG).show();
 		}
 	}
 	LocationListener locationListener = new LocationListener() {
@@ -259,7 +263,7 @@ public class Home extends Activity
 		AlertDialog.Builder builder = new AlertDialog.Builder(context);
 		builder.setTitle(getString(R.string.loc_man));
 		builder.setMessage(getString(R.string.ask_for_gps));
-		builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+		builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int which)
 				{
@@ -279,7 +283,7 @@ public class Home extends Activity
 			});
 		builder.create().show();
 	}
-	
+
 }
 	
 

@@ -67,7 +67,7 @@ public class Utils extends Activity
 		noti.setLatestEventInfo(context, "Rezzo", "Use wifi to process cached reference images", contentIntent);
 		long[] vibrate = {0, 100, 100, 100, 100, 100, 100, 100, 375, 100, 100, 100, 100, 100, 100, 100};
 		noti.vibrate = vibrate;
-//		noti.defaults = Notification.DEFAULT_VIBRATE; //need permissions
+		noti.defaults = Notification.DEFAULT_VIBRATE; //need permissions
 		//to have countdown, call NotificationManager::notify with the same ID
 
 		final int HELLO_ID = R.id.select_batch;

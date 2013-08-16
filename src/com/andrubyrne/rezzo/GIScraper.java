@@ -61,8 +61,6 @@ public class GIScraper extends Activity
 		mapIntent.putExtras(bundle);
 		if (batch)
 		{
-			Log.e(TAG, "got to first else");
-
 		    File[] refImages = outDir.listFiles(jpgFileFilter);
 			if (refImages.length == 0)
 			{	//check that there are files
@@ -88,11 +86,17 @@ public class GIScraper extends Activity
 			catch (NullPointerException e)
 			{
 				Toast.makeText(this, R.string.bad_pic, Toast.LENGTH_SHORT).show();
+				startActivity(homeIntent);
+				
+				Log.e(TAG, "got to last else caych");	
+				return;
 			}
 
 
 		try
-		{ 
+		{
+			Log.e(TAG, "filepath = "+intent.getStringExtra("filepath"));
+			
 			String filepath = inFile.getAbsolutePath();
 			mEH.createInFile(filepath);
 			mEH.readExifData();
