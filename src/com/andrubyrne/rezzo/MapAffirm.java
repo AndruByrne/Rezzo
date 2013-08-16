@@ -1,27 +1,28 @@
 package com.andrubyrne.rezzo;
 import android.app.*;
-import android.graphics.*;
-import android.os.*;
-import android.view.*;
-import android.view.animation.*;
-import android.widget.*;
-import com.google.android.gms.maps.*;
-import com.google.android.gms.maps.model.*;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMap.CancelableCallback;
-
-import android.graphics.Interpolator;
 import android.content.*;
-import com.google.android.gms.common.*;
+import android.os.*;
+import android.preference.*;
 import android.util.*;
+import android.view.*;
+import com.andrubyrne.rezzo.*;
+import com.google.android.gms.common.*;
+import com.google.android.gms.maps.*;
+import com.google.android.gms.maps.GoogleMap.*;
+import com.google.android.gms.maps.model.*;
 
 public class MapAffirm extends Activity
 {
-	//  private ImageView imageView;
+	//map object
 	private GoogleMap map;
+	//from extras
 	LatLng latLng;
+	//user defined latLng
 	LatLng newLatLng;
+	//camera location object
 	CameraPosition cameraPosition;
+	//pause between map travels
+	final int mapHopDelay = 2000;
 	//initial zoom
 	static final int initZoom = 8;
 	//steps the zoom
@@ -35,28 +36,37 @@ public class MapAffirm extends Activity
 	//steps the spin
 	int stepSpin = 0;
 	//number of steps in spin (factor of 360)
-	int stepSpinMax = 4;
+	int stepSpinMax = 8;
 	//number of degrees in stepSpin
 	int stepSpinDetent = 360 / stepSpinMax;
-
+    //intent to pass
 	Intent detailIntent;
+	//intent to receive
 	Intent intent;
+	//bundle to transfer extras
 	Bundle bundle;
-	boolean batch;		
+	//set from extras
+	boolean batch;	
+    //token for user to describe where the camera was	
 	Marker marker;
+	//debug tag
 	private final String TAG = getClass().getSimpleName();
-	final int mapHopDelay = 2000;
-
+	boolean animate;
+	SharedPreferences preferences;
+	
     @Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.map_affirm);
+	    intent = this.getIntent();
+		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+		preferences = PreferenceManager.getDefaultSharedPreferences(this);
+		if(preferences.getBoolean("use_ani", true) == false) stepZoom = 666;
 		try
 		{MapsInitializer.initialize(this);}
 		catch (GooglePlayServicesNotAvailableException impossible)
 		{	/* Impossible */ Log.e(TAG, "the impossible occurred");}
-	    intent = this.getIntent();
 		latLng = new LatLng(intent.getDoubleExtra("Latitude", 0.0), intent.getDoubleExtra("Longitude", 0.0));
 		map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
     	map.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.builder()
@@ -84,8 +94,6 @@ public class MapAffirm extends Activity
 				map.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.builder()
 																		.target(latLng)
 																		.zoom(initZoom + (stepZoomDetent * (stepZoom - 1)))
-																		//	 .bearing(40*aniStep)
-																		//	 .tilt(60)
 																		.build()), mapHopDelay, cameraAnimation);
 
 			}
@@ -93,7 +101,6 @@ public class MapAffirm extends Activity
 			{map.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.builder()
 																	 .target(latLng)
 																	 .zoom(18)
-																	 //	 .bearing(0)
 																	 .tilt(0)
 																	 .build()));
 			}

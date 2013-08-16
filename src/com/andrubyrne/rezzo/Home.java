@@ -66,7 +66,8 @@ public class Home extends Activity
 	{
 		super.onResume();
 		preferences = PreferenceManager.getDefaultSharedPreferences(this);
-		gsmUser = preferences.getBoolean("ignore_wifi", false);
+		gsmUser = preferences.getBoolean("use_gsm", false);
+//		gsmUser = preferences.getBoolean("ignore_wifi", false);
 		File[] refImages = outDir.listFiles(jpgFileFilter);
 		if (!gsmUser && refImages.length > 0 && utils.isConnected(this))
 		{ // notify batch processing availability if needed

@@ -25,6 +25,8 @@
 	<string name="bad_pic">Cannot reference internal files of another application; please copy picture to sdcard and try again</string>
 	<string name="use_gsm">Use GSM Radio</string>
 	<string name="use_gsm_summ">Attempt to use cellular network (only recommended for areas with reliable service)</string>
+	<string name="use_ani">Panoramic Sweep</string>
+	<string name="use_ani_summ">Use extended map zoom--may cause MT field adaptation effect</string>
 	<string name="goto_source">View source code</string>
 	<string name="settings">Settings</string>
 	<string name="noti_title">Rezzo batch function available</string>

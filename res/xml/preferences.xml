@@ -5,6 +5,11 @@
         android:title="@string/use_gsm"
         android:summary="@string/use_gsm_summ"
         android:defaultValue="false" />
+    <CheckBoxPreference
+        android:key="use_ani"
+        android:title="@string/use_ani"
+        android:summary="@string/use_ani_summ"
+        android:defaultValue="true" />
 	<Preference android:title="@string/goto_source" >
 		<intent android:action="android.intent.action.VIEW"
             android:data="http://www.github.com/AndruByrne/Rezzo" />
