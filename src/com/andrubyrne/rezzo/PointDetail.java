@@ -29,6 +29,7 @@ public class PointDetail extends Activity
 	private final String TAG = getClass().getSimpleName();
 	private String filepath;
 	SharedPreferences preferences;
+	File chop;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -64,7 +65,7 @@ public class PointDetail extends Activity
 		regionName.setText(preferences.getString("region", "none"));
 		bitmap = BitmapFactory.decodeFile(intent.getStringExtra("filepath"));
 		imageView.setImageBitmap(bitmap);
-
+		chop = new File(intent.getStringExtra("filepath"));
 	}
 
 	public void doneNaming(View v)
@@ -72,7 +73,7 @@ public class PointDetail extends Activity
 		new PostJSONTask().execute();
 		if (batch)
 		{
-			deleteFile(filepath);
+			chop.delete();
 			startActivity(batchIntent);
 		}
 	    finish();
@@ -141,7 +142,7 @@ public class PointDetail extends Activity
 	{
 		try
 		{
-			HttpURLConnection httpcon = (HttpURLConnection) ((new URL("http://rezzo.herokuapp.com/ios").openConnection()));
+			HttpURLConnection httpcon = (HttpURLConnection) ((new URL("http://rezzo.herokuapp.com/iOS").openConnection()));
 
 			httpcon.setDoOutput(true);
 			httpcon.setRequestProperty("Content-Type", "application/json");
