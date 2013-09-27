@@ -9,7 +9,10 @@ package com.google.android.gms;
 
 public final class R {
     public static final class array {
+        public static final int inf_res_array=0x7f080002;
+        public static final int nat_res_array=0x7f080001;
         public static final int regions_array=0x7f080000;
+        public static final int skl_res_array=0x7f080003;
     }
     public static final class attr {
         /** <p>Must be a floating point value, such as "<code>1.2</code>".

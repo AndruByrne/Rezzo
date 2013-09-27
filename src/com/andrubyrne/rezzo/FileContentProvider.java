@@ -29,7 +29,7 @@ public class FileContentProvider extends ContentProvider
 		try {
 
 			File mFile = new File(getContext().getFilesDir(), "newImage.jpg");
-
+            
 			if(!mFile.exists()) {
 
 				mFile.createNewFile();

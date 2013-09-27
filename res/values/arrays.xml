@@ -33,4 +33,39 @@
 		<item>Pemba South</item>
 		<item>none</item>		
     </string-array>
+	<string-array name="nat_res_array">
+		<item>None</item>
+		<item>Water supply</item>
+		<item>Plantation</item>
+		<item>Hydropower</item>
+		<item>Solar power</item>
+		<item>Sand</item>
+		<item>Clay</item>
+		<item>Fish</item>
+	</string-array>
+	<string-array name="inf_res_array">
+		<item>None</item>
+		<item>School</item>
+		<item>Hospital</item>
+		<item>Health center</item>
+		<item>Police station</item>
+		<item>Computer lab</item>
+		<item>Seed bank</item>
+		<item>Transportation hub</item>
+		<item>Garden</item>
+		<item>Corner store</item>
+		<item>Church</item>
+		<item>Mosque</item>
+	</string-array>
+    <string-array name = "skl_res_array">
+		<item>None</item>
+		<item>Doctor</item>
+		<item>Nurse</item>
+		<item>Carpenter</item>
+		<item>Metal worker</item>
+		<item>Farmer</item>
+		<item>Teacher</item>
+		<item>NGO Office</item>
+		<item>Well digger</item>
+	</string-array>
 </resources>

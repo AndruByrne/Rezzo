@@ -41,35 +41,43 @@
 	<TextView
 		android:id="@+id/resourcesTitle"
 		android:text="@string/resources_title"
+		android:textSize="20sp"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"		
     	android:layout_below="@id/regionName" />
-	<EditText
+	<TextView
+		android:id="@+id/natresourcesTitle"
+		android:text="@string/hint_nat_res"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"		
+    	android:layout_below="@id/resourcesTitle" />
+	<Spinner
 		android:id="@+id/nat_res"
-		android:layout_width="wrap_content"
+		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:layout_below="@id/resourcesTitle"
-		android:singleLine="true"
-		android:imeOptions="actionNext"
-		android:hint="@string/hint_nat_res" />	
-	<EditText
+		android:layout_below="@id/resourcesTitle" />	
+	<TextView
+		android:id="@+id/infresourcesTitle"
+		android:text="@string/hint_inf_res"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"		
+    	android:layout_below="@id/nat_res" />
+	<Spinner
 		android:id="@+id/inf_res"
-		android:layout_width="wrap_content"
+		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:layout_below="@id/resourcesTitle"
-		android:singleLine="true"
-		android:imeOptions="actionNext"
-		android:layout_toRightOf="@id/nat_res"
-		android:hint="@string/hint_inf_res" />	
-	<EditText
+		android:layout_below="@id/nat_res" />	
+	<TextView
+		android:id="@+id/sklresourcesTitle"
+		android:text="@string/hint_skl_res"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"		
+    	android:layout_below="@id/inf_res" />
+	<Spinner
 		android:id="@+id/skl_res"
-		android:layout_width="wrap_content"
-		android:layout_below="@id/resourcesTitle"
-		android:layout_height="wrap_content"
-		android:layout_toRightOf="@id/inf_res"
-		android:singleLine="true"
-		android:imeOptions="actionNext"
-		android:hint="@string/hint_skl_res" />	
+		android:layout_width="fill_parent"
+		android:layout_below="@id/inf_res"
+		android:layout_height="wrap_content" />	
 	<EditText
 		android:id="@+id/notesPoint"
 		android:layout_width="wrap_content"

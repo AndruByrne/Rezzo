@@ -103,7 +103,7 @@ public class MapAffirm extends Activity
 																	 .zoom(18)
 																	 .tilt(0)
 																	 .build()));
-			}
+	    	}
 			else
 			{
 				if (stepSpin <= stepSpinMax)

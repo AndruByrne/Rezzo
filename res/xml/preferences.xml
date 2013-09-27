@@ -10,9 +10,13 @@
         android:title="@string/use_ani"
         android:summary="@string/use_ani_summ"
         android:defaultValue="true" />
+	<Preference android:title="@string/goto_data">
+		<intent android:action="android.intent.action.VIEW"
+			android:data="@string/data_url"/>
+	</Preference>
 	<Preference android:title="@string/goto_source" >
 		<intent android:action="android.intent.action.VIEW"
-            android:data="http://www.github.com/AndruByrne/Rezzo" />
+            android:data="@string/source_url" />
 	</Preference>
 	<ListPreference
         android:key="region"
