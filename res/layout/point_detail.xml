@@ -29,6 +29,7 @@
 	<TextView
 		android:id="@+id/regionLabel"
 		android:text="Region (from settings): "
+		android:textSize="20sp"
 		android:layout_width="128dp"
 		android:layout_height="wrap_content"
 		android:layout_alignParentLeft="true"
@@ -55,7 +56,7 @@
 		android:id="@+id/nat_res"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:layout_below="@id/resourcesTitle" />	
+		android:layout_below="@id/natresourcesTitle" />	
 	<TextView
 		android:id="@+id/infresourcesTitle"
 		android:text="@string/hint_inf_res"
@@ -66,7 +67,7 @@
 		android:id="@+id/inf_res"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:layout_below="@id/nat_res" />	
+		android:layout_below="@id/infresourcesTitle" />	
 	<TextView
 		android:id="@+id/sklresourcesTitle"
 		android:text="@string/hint_skl_res"
@@ -76,7 +77,7 @@
 	<Spinner
 		android:id="@+id/skl_res"
 		android:layout_width="fill_parent"
-		android:layout_below="@id/inf_res"
+		android:layout_below="@id/sklresourcesTitle"
 		android:layout_height="wrap_content" />	
 	<EditText
 		android:id="@+id/notesPoint"

@@ -96,7 +96,7 @@ public class GIScraper extends Activity
 		try
 		{
 			Log.e(TAG, "filepath = "+intent.getStringExtra("filepath"));
-			
+			//nullpointer above on return from point_detail
 			String filepath = inFile.getAbsolutePath();
 			mEH.createInFile(filepath);
 			mEH.readExifData();

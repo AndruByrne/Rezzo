@@ -103,13 +103,17 @@ public class Home extends Activity
 
 	public void fromBatch(View v)
 	{
-		if (utils.isConnected(this) || gsmUser)
+		if (outDir.listFiles(jpgFileFilter).length >= 1)
 		{
-			Intent i = new Intent(this, GIScraper.class);
-			i.putExtra("batch", true);
-			startActivity(i);
+			if (utils.isConnected(this) || gsmUser)
+			{
+				Intent i = new Intent(this, GIScraper.class);
+				i.putExtra("batch", true);
+				startActivity(i);
+			}
+			else Toast.makeText(getBaseContext(), R.string.no_wifi_gallery, Toast.LENGTH_LONG).show();	
 		}
-		else Toast.makeText(getBaseContext(), R.string.no_wifi_gallery, Toast.LENGTH_LONG).show();	
+		else Toast.makeText(this, R.string.no_cache, Toast.LENGTH_LONG).show();
 	}
 
 	public void fromGallery(View v)
@@ -134,7 +138,7 @@ public class Home extends Activity
 					//	attach GIS data
 					File out = new File(getFilesDir(), "newImage.jpg");
 					writeExif(out);
-
+					
 					Intent i = new Intent(this, GIScraper.class);
 					i.putExtra("batch", false);
 					i.putExtra("filepath", getFilesDir() + "/newImage.jpg");
@@ -178,7 +182,7 @@ public class Home extends Activity
 					{
 						Log.e(TAG, e.toString());
 					}
-					
+
 				}			
 			}
 			else Toast.makeText(getBaseContext(), R.string.no_wifi_photo, Toast.LENGTH_LONG).show();

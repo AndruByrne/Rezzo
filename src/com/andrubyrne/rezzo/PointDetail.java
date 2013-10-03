@@ -83,7 +83,7 @@ public class PointDetail extends Activity implements OnItemSelectedListener
 		finalGIStext.setText(getString(R.string.final_gis_text) +
 							 " Latitude: " + intent.getDoubleExtra("Latitude", 0.0) + " Longitude: " + intent.getDoubleExtra("Longitude", 0.0));
   		preferences = PreferenceManager.getDefaultSharedPreferences(this); 
-	//	Log.e(TAG, preferences.getString("region", "none"));
+		//	Log.e(TAG, preferences.getString("region", "none"));
 		regionName.setText(preferences.getString("region", "none"));
 		bitmap = BitmapFactory.decodeFile(intent.getStringExtra("filepath"));
 		imageView.setImageBitmap(bitmap);
@@ -91,7 +91,7 @@ public class PointDetail extends Activity implements OnItemSelectedListener
 	}
     public void setSpinners()
 	{
-	//	Log.e(TAG, "setting spinners");
+		//	Log.e(TAG, "setting spinners");
 		sklSpinner = (Spinner) findViewById(R.id.skl_res);
 		infSpinner = (Spinner) findViewById(R.id.inf_res);
 		natSpinner = (Spinner) findViewById(R.id.nat_res);
@@ -115,14 +115,14 @@ public class PointDetail extends Activity implements OnItemSelectedListener
 	public void onItemSelected(AdapterView<?> parent, View view, 
 							   int pos, long id)
 	{
-		Log.e(TAG, "selected" +parent.getId());
+		//Log.e(TAG, "selected " +parent.getId());
         // An item was selected. You can retrieve the selected item using
         // parent.getItemAtPosition(pos)
 		switch (parent.getId())
 		{
 			case 2131099680:
 				resNat = resNatArray[pos];
-				Log.e(TAG, "resNat: " + resNat);
+				//Log.e(TAG, "resNat: " + resNat);
 				break;
 			case 2131099682:
 				resInf = resInfArray[pos];
@@ -148,16 +148,38 @@ public class PointDetail extends Activity implements OnItemSelectedListener
 		}
 	    finish();
 	}
+	
+	
+	
+	//jsonwriting
+	public static String convertStreamToString(InputStream is) throws Exception {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+		StringBuilder sb = new StringBuilder();
+		String line = null;
+
+		while ((line = reader.readLine()) != null) {
+			sb.append(line);
+		}
+
+		is.close();
+
+		return sb.toString();
+	}
 	private class PostJSONTask extends AsyncTask<Void, Void, Boolean>
 	{
 		protected Boolean doInBackground(Void... params)
 		{
-			if (pushToServer()) return true;
+			if (pushToServer()) 
+			{
+				Log.e(TAG, "pushed to server");
+				return true;
+			}
 			else return false;
 		}
 		protected void onPostExecute()
 		{
-			Toast.makeText(getBaseContext(), "Successful", Toast.LENGTH_SHORT).show();
+			Log.e(TAG, "upload successful");
+			Toast.makeText(getBaseContext(), "Upload Successful", Toast.LENGTH_SHORT).show();
 		}
 	}
 	public void writeJsonStream(OutputStream out) throws IOException
@@ -176,14 +198,17 @@ public class PointDetail extends Activity implements OnItemSelectedListener
 		writeRes(writer);
 		writer.endObject();
 		writer.close();
+		//	Log.e(TAG, "JSON written");
     }
 
 	public void writeRes(JsonWriter writer) throws IOException
 	{
 		writer.beginObject();
+		//Log.e(TAG, "writing resources");
 		writer.name("Natural Resources").value(resNat);
 		writer.name("Infrastructure Resources").value(resInf);
 		writer.name("Skilled Resources").value(resSkl);
+		Log.e(TAG, "written resources");
 		writer.endObject();
 	}
 
@@ -208,25 +233,44 @@ public class PointDetail extends Activity implements OnItemSelectedListener
 
 	public boolean pushToServer()
 	{
+		OutputStream out = null;
+		HttpURLConnection httpcon = null;
+		InputStream in;
 		try
 		{
-			HttpURLConnection httpcon = (HttpURLConnection) ((new URL("http://rezzo.herokuapp.com/iOS").openConnection()));
-
-			httpcon.setDoOutput(true);
-			httpcon.setRequestProperty("Content-Type", "application/json");
-			httpcon.setRequestProperty("Accept", "application/json");
-			httpcon.setRequestMethod("POST");
-			httpcon.connect();
-
-			OutputStream os = httpcon.getOutputStream();
-			writeJsonStream(os);
-			os.close();
+			httpcon = ((HttpURLConnection) (new URL("http://rezzo.herokuapp.com/ios")).openConnection());
+		}
+		catch (IOException e){Log.e(TAG, e.toString());}
+		
+		httpcon.setDoOutput(true); 
+		httpcon.setChunkedStreamingMode(0);
+		try
+		{
+			out = httpcon.getOutputStream(); 
+		}
+		catch (IOException e){Log.e(TAG, e.toString());}
+		try
+		{
+			out.write("rezzo_entry_0".getBytes("UTF-8"));
+			writeJsonStream(out);
+		}
+		catch (IOException e){Log.e(TAG, e.toString());}
+		try
+		{
+			in = httpcon.getInputStream(); 
+			try
+			{
+				Log.i(TAG, "server response: "+convertStreamToString(in));
+			}
+			catch (Exception e)
+			{Log.e(TAG, e.toString());}
+		}
+		catch (IOException e)	{}
+		finally
+		{
+			httpcon.disconnect();
+			Log.i(TAG, "disconnected from " + httpcon.toString());
 			return true;
 		}
-		catch (IOException e)
-		{Log.e(TAG, e.toString());
-			return false;}
 	}
-
-
 }
