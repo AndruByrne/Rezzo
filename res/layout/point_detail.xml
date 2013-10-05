@@ -27,12 +27,12 @@
 		android:layout_height="wrap_content"
 		android:text="OK"
 		android:layout_toRightOf="@id/namePoint"
-		android:onClick="@id/doneNaming" />
+		android:onClick="doneNaming" />
 	<TextView
 		android:id="@+id/regionLabel"
 		android:text="Region (from settings): "
 		android:textSize="20sp"
-		android:layout_width="128dp"
+		android:layout_width="186dp"
 		android:layout_height="wrap_content"
 		android:layout_below="@id/finalGISdata"
 		android:layout_toRightOf="@id/doneNaming" />

@@ -50,7 +50,7 @@ public class PointDetail extends Activity implements OnItemSelectedListener
     ListView resNatDisplay;
 	ListView resInfDisplay;
     ListView resSklDisplay;
-	
+
 	//last we'll see of the pictures
 	ImageView imageView;
 	Bitmap bitmap;
@@ -132,7 +132,7 @@ public class PointDetail extends Activity implements OnItemSelectedListener
 		resNatAdapter = new ResourcesAdapter(this, R.layout.res_row, resNat);
 		resInfAdapter = new ResourcesAdapter(this, R.layout.res_row, resInf);
 		resSklAdapter = new ResourcesAdapter(this, R.layout.res_row, resSkl);
-		
+
 	}
 
 	public void onItemSelected(AdapterView<?> parent, View view, 
@@ -155,7 +155,7 @@ public class PointDetail extends Activity implements OnItemSelectedListener
 				resInfAdapter.notifyDataSetChanged();
 				break;
 		    case 2131099684:
-				 //resSkl = resSklArray[pos];
+				//resSkl = resSklArray[pos];
 				resSklAdapter.add(resSklArray[pos]);
 				resSklAdapter.notifyDataSetChanged();
 				break;
@@ -218,13 +218,13 @@ public class PointDetail extends Activity implements OnItemSelectedListener
 		writer.setIndent("    ");
 		writer.beginObject();
 //		writer.name("GIS coordinates");
-		writer.name("latitude").value(intent.getDoubleExtra("Latitude", 0.0)).toString();
+		writer.name("title").value(namePoint.getText().toString());
 		writer.name("longitude").value(intent.getDoubleExtra("Longitude", 0.0)).toString();
 		//	writeGIS(writer);
-		writer.name("title").value(namePoint.getText().toString());
         writer.name("notes").value(notesPoint.getText().toString());
 		writer.name("region").value(preferences.getString("region", "none"));
-        writer.name("resources");
+		writer.name("latitude").value(intent.getDoubleExtra("Latitude", 0.0)).toString();
+		writer.name("resources");
 		writeRes(writer);
 		writer.endObject();
 		writer.close();
@@ -245,7 +245,7 @@ public class PointDetail extends Activity implements OnItemSelectedListener
 				if (!flag)
 				{
 					writer.value(res);
-					
+
 				}
 				flag = false;
 			}
@@ -322,16 +322,17 @@ public class PointDetail extends Activity implements OnItemSelectedListener
 		httpcon.setChunkedStreamingMode(0);
 		try
 		{
-			//out = httpcon.getOutputStream(); 
-			File outFile = new File(Environment.getExternalStorageDirectory().getPath() + "/" + TAG + "/testJSON");
-			out = new FileOutputStream(outFile, false);
+			out = httpcon.getOutputStream(); 
+			//File outFile = new File(Environment.getExternalStorageDirectory().getPath() + "/" + TAG + "/testJSON");
+			//out = new FileOutputStream(outFile, false);
 		}
 		catch (IOException e)
 		{Log.e(TAG, e.toString());}
 		try
 		{
-			out.write("\n rezzo_entry_0".getBytes("UTF-8"));
+			out.write("\r\n rezzo_entry_0 \r\n\r\n".getBytes("UTF-8"));
 			writeJsonStream(out);
+			out.write("\r\n\r\n ".getBytes("UTF-8"));
 		}
 		catch (IOException e)
 		{Log.e(TAG, e.toString());}
