@@ -31,7 +31,7 @@
 	<string name="source_url">http://www.github.com/AndruByrne/Rezzo</string>
 	<string name="goto_data">View Fusion Table</string>
 	<string name="data_url">http://codeforsanfrancisco.org/Mobile-Fusion-Tables/RezzoTanzania.html</string>
-	<string name="settings">Settings</string>
+	<string name="settings">Options</string>
 	<string name="noti_title">Rezzo batch function available</string>
 	<string name="noti_content_title">Rezzo</string>
 	<string name="noti_content_text">Use wifi to process cached reference images</string>

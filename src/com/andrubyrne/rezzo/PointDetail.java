@@ -10,6 +10,8 @@ import android.widget.*;
 import java.io.*;
 import java.net.*;
 import android.widget.AdapterView.*;
+import java.util.*;
+import com.andrubyrne.utils.*;
 
 public class PointDetail extends Activity implements OnItemSelectedListener
 {
@@ -34,13 +36,21 @@ public class PointDetail extends Activity implements OnItemSelectedListener
 	Spinner natSpinner;
 	Spinner infSpinner;
 	Spinner sklSpinner;
-	String resNat;
-	String resInf;
-	String resSkl;
+	ArrayList<String> resNat;
+	ArrayList<String> resInf;
+	ArrayList<String> resSkl;
 	String[] resNatArray;
 	String[] resInfArray;
 	String[] resSklArray;
-
+//Adapters for resources
+    ResourcesAdapter resNatAdapter;
+	ResourcesAdapter resInfAdapter;
+    ResourcesAdapter resSklAdapter;
+//view for resources
+    ListView resNatDisplay;
+	ListView resInfDisplay;
+    ListView resSklDisplay;
+	
 	//last we'll see of the pictures
 	ImageView imageView;
 	Bitmap bitmap;
@@ -65,6 +75,12 @@ public class PointDetail extends Activity implements OnItemSelectedListener
 		resNatArray = getResources().getStringArray(R.array.nat_res_array);
 		resInfArray = getResources().getStringArray(R.array.inf_res_array);
 		resSklArray = getResources().getStringArray(R.array.skl_res_array);
+		resNatDisplay = (ListView)findViewById(R.id.natresourcesDisplay);
+		resInfDisplay = (ListView)findViewById(R.id.infresourcesDisplay);
+		resSklDisplay = (ListView)findViewById(R.id.sklresourcesDisplay);
+		resNat = new ArrayList<String>();
+		resInf = new ArrayList<String>();
+		resSkl = new ArrayList<String>();
 		setSpinners();
     }
 
@@ -88,6 +104,9 @@ public class PointDetail extends Activity implements OnItemSelectedListener
 		bitmap = BitmapFactory.decodeFile(intent.getStringExtra("filepath"));
 		imageView.setImageBitmap(bitmap);
 		chop = new File(intent.getStringExtra("filepath"));
+		resNatDisplay.setAdapter(resNatAdapter);
+		resInfDisplay.setAdapter(resInfAdapter);
+		resSklDisplay.setAdapter(resSklAdapter);
 	}
     public void setSpinners()
 	{
@@ -110,6 +129,10 @@ public class PointDetail extends Activity implements OnItemSelectedListener
 		sklSpinner.setOnItemSelectedListener(this);
 		infSpinner.setOnItemSelectedListener(this);
 		natSpinner.setOnItemSelectedListener(this);
+		resNatAdapter = new ResourcesAdapter(this, R.layout.res_row, resNat);
+		resInfAdapter = new ResourcesAdapter(this, R.layout.res_row, resInf);
+		resSklAdapter = new ResourcesAdapter(this, R.layout.res_row, resSkl);
+		
 	}
 
 	public void onItemSelected(AdapterView<?> parent, View view, 
@@ -121,14 +144,20 @@ public class PointDetail extends Activity implements OnItemSelectedListener
 		switch (parent.getId())
 		{
 			case 2131099680:
-				resNat = resNatArray[pos];
+				resNatAdapter.add(resNatArray[pos]);
+				//resNat.add( resNatArray[pos] );
+				resNatAdapter.notifyDataSetChanged();
 				//Log.e(TAG, "resNat: " + resNat);
 				break;
 			case 2131099682:
-				resInf = resInfArray[pos];
+				//resInf = resInfArray[pos];
+				resInfAdapter.add(resInfArray[pos]);
+				resInfAdapter.notifyDataSetChanged();
 				break;
 		    case 2131099684:
-				resSkl = resSklArray[pos];
+				 //resSkl = resSklArray[pos];
+				resSklAdapter.add(resSklArray[pos]);
+				resSklAdapter.notifyDataSetChanged();
 				break;
 		}
 	}
@@ -148,16 +177,16 @@ public class PointDetail extends Activity implements OnItemSelectedListener
 		}
 	    finish();
 	}
-	
-	
-	
+
 	//jsonwriting
-	public static String convertStreamToString(InputStream is) throws Exception {
+	public static String convertStreamToString(InputStream is) throws Exception
+	{
 		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 		StringBuilder sb = new StringBuilder();
 		String line = null;
 
-		while ((line = reader.readLine()) != null) {
+		while ((line = reader.readLine()) != null)
+		{
 			sb.append(line);
 		}
 
@@ -176,6 +205,7 @@ public class PointDetail extends Activity implements OnItemSelectedListener
 			}
 			else return false;
 		}
+		@Override
 		protected void onPostExecute()
 		{
 			Log.e(TAG, "upload successful");
@@ -205,10 +235,55 @@ public class PointDetail extends Activity implements OnItemSelectedListener
 	{
 		writer.beginObject();
 		//Log.e(TAG, "writing resources");
-		writer.name("Natural Resources").value(resNat);
-		writer.name("Infrastructure Resources").value(resInf);
-		writer.name("Skilled Resources").value(resSkl);
-		Log.e(TAG, "written resources");
+		writer.name("Natural Resources");
+		writer.beginArray();
+		if (resNat.size() > 0)
+		{
+			boolean flag = true;
+			for (String res : resNatAdapter.getItems())
+			{
+				if (!flag)
+				{
+					writer.value(res);
+					
+				}
+				flag = false;
+			}
+		}
+		writer.endArray();
+		writer.name("Skilled Resources");
+		writer.beginArray();
+		if (resNat.size() > 0)
+		{
+			boolean flag = true;
+			for (String res : resSklAdapter.getItems())
+			{
+				if (!flag)
+				{
+					writer.value(res);
+
+				}
+				flag = false;
+			}
+		}
+		writer.endArray();
+		writer.name("Infrastructure Resources");
+		writer.beginArray();
+		if (resNat.size() > 0)
+		{
+			boolean flag = true;
+			for (String res : resInfAdapter.getItems())
+			{
+				if (!flag)
+				{
+					writer.value(res);
+
+				}
+				flag = false;
+			}
+		}
+		writer.endArray();
+		//Log.e(TAG, "written resources");
 		writer.endObject();
 	}
 
@@ -240,32 +315,38 @@ public class PointDetail extends Activity implements OnItemSelectedListener
 		{
 			httpcon = ((HttpURLConnection) (new URL("http://rezzo.herokuapp.com/ios")).openConnection());
 		}
-		catch (IOException e){Log.e(TAG, e.toString());}
-		
+		catch (IOException e)
+		{Log.e(TAG, e.toString());}
+
 		httpcon.setDoOutput(true); 
 		httpcon.setChunkedStreamingMode(0);
 		try
 		{
-			out = httpcon.getOutputStream(); 
+			//out = httpcon.getOutputStream(); 
+			File outFile = new File(Environment.getExternalStorageDirectory().getPath() + "/" + TAG + "/testJSON");
+			out = new FileOutputStream(outFile, false);
 		}
-		catch (IOException e){Log.e(TAG, e.toString());}
+		catch (IOException e)
+		{Log.e(TAG, e.toString());}
 		try
 		{
-			out.write("rezzo_entry_0".getBytes("UTF-8"));
+			out.write("\n rezzo_entry_0".getBytes("UTF-8"));
 			writeJsonStream(out);
 		}
-		catch (IOException e){Log.e(TAG, e.toString());}
+		catch (IOException e)
+		{Log.e(TAG, e.toString());}
 		try
 		{
 			in = httpcon.getInputStream(); 
 			try
 			{
-				Log.i(TAG, "server response: "+convertStreamToString(in));
+				Log.i(TAG, "server response: " + convertStreamToString(in));
 			}
 			catch (Exception e)
 			{Log.e(TAG, e.toString());}
 		}
-		catch (IOException e)	{}
+		catch (IOException e)
+		{}
 		finally
 		{
 			httpcon.disconnect();

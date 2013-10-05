@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:id="@+id/RelativeLayout4"
 	android:layout_width="fill_parent"
@@ -10,45 +11,47 @@
 		android:layout_alignParentLeft="true"
  		android:layout_height="wrap_content"
 		android:layout_centerHorizontal="true" />
-	<Button
-		android:id="@+id/doneNaming"
-	    android:layout_toRightOf="@id/finalGISdata"
-		android:layout_width="96dp"
-		android:layout_height="wrap_content"
-		android:text="OK"
-		android:onClick="doneNaming" />
 	<EditText
 		android:id="@+id/namePoint"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:singleLine="true"
+		android:layout_alignParentLeft="true"
 		android:inputType="text"
 		android:hint="@string/hint_name_point"
-		android:layout_below="@id/finalGISdata"
-		android:imeOptions="actionNext" /> 	
+		android:layout_below="@id/finalGISdata" /> 	
+	<Button
+		android:id="@+id/doneNaming"
+	    android:layout_below="@id/finalGISdata"
+		android:layout_width="96dp"
+		android:layout_height="wrap_content"
+		android:text="OK"
+		android:layout_toRightOf="@id/namePoint"
+		android:onClick="@id/doneNaming" />
 	<TextView
 		android:id="@+id/regionLabel"
 		android:text="Region (from settings): "
 		android:textSize="20sp"
 		android:layout_width="128dp"
 		android:layout_height="wrap_content"
-		android:layout_alignParentLeft="true"
-    	android:layout_below="@id/namePoint" />
+		android:layout_below="@id/finalGISdata"
+		android:layout_toRightOf="@id/doneNaming" />
 	<TextView
 		android:id="@+id/regionName"
 		android:layout_width="wrap_content"
+		android:layout_below="@id/finalGISdata"
+		android:textSize="18sp"
 		android:layout_height="wrap_content"		
-    	android:layout_below="@id/regionLabel" />
+    	android:layout_toRightOf="@id/regionLabel" />
 	<TextView
 		android:id="@+id/resourcesTitle"
 		android:text="@string/resources_title"
 		android:textSize="20sp"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"		
-    	android:layout_below="@id/regionName" />
-	<TextView
-		android:id="@+id/natresourcesTitle"
-		android:text="@string/hint_nat_res"
+    	android:layout_below="@id/doneNaming" />
+	<ListView 
+		android:id="@+id/natresourcesDisplay"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"		
     	android:layout_below="@id/resourcesTitle" />
@@ -56,10 +59,9 @@
 		android:id="@+id/nat_res"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:layout_below="@id/natresourcesTitle" />	
-	<TextView
-		android:id="@+id/infresourcesTitle"
-		android:text="@string/hint_inf_res"
+		android:layout_below="@id/natresourcesDisplay" />	
+	<ListView 
+		android:id="@+id/infresourcesDisplay"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"		
     	android:layout_below="@id/nat_res" />
@@ -67,17 +69,16 @@
 		android:id="@+id/inf_res"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:layout_below="@id/infresourcesTitle" />	
-	<TextView
-		android:id="@+id/sklresourcesTitle"
-		android:text="@string/hint_skl_res"
+		android:layout_below="@id/infresourcesDisplay" />
+	<ListView 
+		android:id="@+id/sklresourcesDisplay"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"		
     	android:layout_below="@id/inf_res" />
 	<Spinner
 		android:id="@+id/skl_res"
 		android:layout_width="fill_parent"
-		android:layout_below="@id/sklresourcesTitle"
+		android:layout_below="@id/sklresourcesDisplay"
 		android:layout_height="wrap_content" />	
 	<EditText
 		android:id="@+id/notesPoint"

@@ -34,7 +34,7 @@
 		<item>none</item>		
     </string-array>
 	<string-array name="nat_res_array">
-		<item>None</item>
+		<item>Natural Resources</item>
 		<item>Water supply</item>
 		<item>Plantation</item>
 		<item>Hydropower</item>
@@ -44,7 +44,7 @@
 		<item>Fish</item>
 	</string-array>
 	<string-array name="inf_res_array">
-		<item>None</item>
+		<item>Infrastructure Resources</item>
 		<item>School</item>
 		<item>Hospital</item>
 		<item>Health center</item>
@@ -58,7 +58,7 @@
 		<item>Mosque</item>
 	</string-array>
     <string-array name = "skl_res_array">
-		<item>None</item>
+		<item>Skill Resources</item>
 		<item>Doctor</item>
 		<item>Nurse</item>
 		<item>Carpenter</item>

@@ -186,21 +186,21 @@ containing a value of this type.
         public static final int RelativeLayout4=0x7f060018;
         public static final int accept_GPS_coordinates=0x7f060017;
         public static final int deletePic=0x7f060010;
-        public static final int doneNaming=0x7f06001a;
+        public static final int doneNaming=0x7f06001b;
         public static final int exitBatch=0x7f060011;
         public static final int finalGISdata=0x7f060019;
         public static final int finalImageView=0x7f060026;
         public static final int hybrid=0x7f060004;
         public static final int inf_res=0x7f060022;
-        public static final int infresourcesTitle=0x7f060021;
+        public static final int infresourcesDisplay=0x7f060021;
         public static final int launchAffirm=0x7f060007;
         public static final int launchAffirmBatch=0x7f06000e;
         public static final int map=0x7f060016;
         public static final int mapInstruction=0x7f060006;
         public static final int mapInstructionBatch=0x7f06000d;
-        public static final int namePoint=0x7f06001b;
+        public static final int namePoint=0x7f06001a;
         public static final int nat_res=0x7f060020;
-        public static final int natresourcesTitle=0x7f06001f;
+        public static final int natresourcesDisplay=0x7f06001f;
         public static final int none=0x7f060000;
         public static final int normal=0x7f060001;
         public static final int notesPoint=0x7f060025;
@@ -213,10 +213,11 @@ containing a value of this type.
         public static final int select_image=0x7f060013;
         public static final int skipPic=0x7f06000f;
         public static final int skl_res=0x7f060024;
-        public static final int sklresourcesTitle=0x7f060023;
+        public static final int sklresourcesDisplay=0x7f060023;
         public static final int smallerImageView=0x7f060008;
         public static final int smallerImageViewBatch=0x7f06000a;
         public static final int terrain=0x7f060003;
+        public static final int toptext=0x7f060027;
     }
     public static final class layout {
         public static final int giscraper=0x7f030000;
@@ -224,6 +225,7 @@ containing a value of this type.
         public static final int home=0x7f030002;
         public static final int map_affirm=0x7f030003;
         public static final int point_detail=0x7f030004;
+        public static final int res_row=0x7f030005;
     }
     public static final class string {
         public static final int GIScraper_title=0x7f07001e;
