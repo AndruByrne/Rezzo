@@ -12,6 +12,7 @@ import java.net.*;
 import android.widget.AdapterView.*;
 import java.util.*;
 import com.andrubyrne.utils.*;
+import javax.crypto.*;
 
 public class PointDetail extends Activity implements OnItemSelectedListener
 {
@@ -212,9 +213,10 @@ public class PointDetail extends Activity implements OnItemSelectedListener
 			Toast.makeText(getBaseContext(), "Upload Successful", Toast.LENGTH_SHORT).show();
 		}
 	}
-	public void writeJsonStream(OutputStream out) throws IOException
+	public String writeJsonString() throws IOException
 	{
-		JsonWriter writer = new JsonWriter(new OutputStreamWriter(out, "UTF-8"));
+		StringWriter out = new StringWriter();
+		JsonWriter writer = new JsonWriter(out);
 		writer.setIndent("    ");
 		writer.beginObject();
 //		writer.name("GIS coordinates");
@@ -229,6 +231,7 @@ public class PointDetail extends Activity implements OnItemSelectedListener
 		writer.endObject();
 		writer.close();
 		//	Log.e(TAG, "JSON written");
+		return out.toString();
     }
 
 	public void writeRes(JsonWriter writer) throws IOException
@@ -308,48 +311,67 @@ public class PointDetail extends Activity implements OnItemSelectedListener
 
 	public boolean pushToServer()
 	{
-		OutputStream out = null;
+		OutputStream os = null;
+		InputStream is = null;
+		String message = null;
 		HttpURLConnection httpcon = null;
-		InputStream in;
-		try
+	    try
 		{
-			httpcon = ((HttpURLConnection) (new URL("http://rezzo.herokuapp.com/ios")).openConnection());
-		}
-		catch (IOException e)
-		{Log.e(TAG, e.toString());}
+			URL url = new URL("http://build.phonegap.com");
+			
+		    message = writeJsonString();
+			httpcon = ((HttpURLConnection) url.openConnection());
 
-		httpcon.setDoOutput(true); 
-		httpcon.setChunkedStreamingMode(0);
-		try
-		{
-			out = httpcon.getOutputStream(); 
+
+			httpcon.setReadTimeout(10000);
+			httpcon.setConnectTimeout(15000);
+			httpcon.setRequestMethod("POST");
+			httpcon.setDoInput(true);
+			httpcon.setDoOutput(true); 
+			httpcon.setFixedLengthStreamingMode(message.getBytes().length);
+          //  Log.e(TAG, "message length = " + message.getBytes().length);
+		  
+			//headers
+			httpcon.setRequestProperty("Content-Type", "multipart/form-data;charset=utf-8");
+			httpcon.setRequestProperty("X-Requested-With", "XMLHttpRequest");
+
+			//out = httpcon.getOutputStream(); 
 			//File outFile = new File(Environment.getExternalStorageDirectory().getPath() + "/" + TAG + "/testJSON");
 			//out = new FileOutputStream(outFile, false);
-		}
-		catch (IOException e)
-		{Log.e(TAG, e.toString());}
-		try
-		{
-			out.write("\r\n rezzo_entry_0 \r\n\r\n".getBytes("UTF-8"));
-			writeJsonStream(out);
-			out.write("\r\n\r\n ".getBytes("UTF-8"));
-		}
-		catch (IOException e)
-		{Log.e(TAG, e.toString());}
-		try
-		{
-			in = httpcon.getInputStream(); 
+			httpcon.connect();
+			
+			os = new BufferedOutputStream(httpcon.getOutputStream());
+			os.write(message.getBytes());
+			os.flush();
+			
+			
+			//out.write("\r\n rezzo_entry_0 \r\n\r\n".getBytes("UTF-8"));
+			//writeJsonString(out);
+			//out.write("\r\n\r\n ".getBytes("UTF-8"));
+
+		    is = httpcon.getInputStream(); 
+
 			try
 			{
-				Log.i(TAG, "server response: " + convertStreamToString(in));
+				Log.i(TAG, "server response: " + convertStreamToString(is));
 			}
 			catch (Exception e)
 			{Log.e(TAG, e.toString());}
+
 		}
 		catch (IOException e)
-		{}
+		{Log.e(TAG, e.toString());}
 		finally
 		{
+			try
+			{
+				os.close();
+				is.close();
+			}
+			catch (IOException e)
+			{Log.e(TAG, e.toString());}
+			catch (NullPointerException e)
+			{Log.e(TAG, e.toString());}
 			httpcon.disconnect();
 			Log.i(TAG, "disconnected from " + httpcon.toString());
 			return true;
