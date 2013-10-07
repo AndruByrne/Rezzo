@@ -338,6 +338,8 @@ containing a value of this type.
         public static final int noti_content_text=0x7f070036;
         public static final int noti_content_title=0x7f070035;
         public static final int noti_title=0x7f070034;
+        public static final int post_html=0x7f070042;
+        public static final int pre_html=0x7f070041;
         public static final int prefs_name=0x7f070029;
         public static final int resources_title=0x7f07003c;
         public static final int select_batch_button=0x7f070019;

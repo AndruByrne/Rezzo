@@ -13,6 +13,7 @@ import android.widget.AdapterView.*;
 import java.util.*;
 import com.andrubyrne.utils.*;
 import javax.crypto.*;
+import com.loopj.android.http.*;
 
 public class PointDetail extends Activity implements OnItemSelectedListener
 {
@@ -82,6 +83,7 @@ public class PointDetail extends Activity implements OnItemSelectedListener
 		resNat = new ArrayList<String>();
 		resInf = new ArrayList<String>();
 		resSkl = new ArrayList<String>();
+		
 		setSpinners();
     }
 
@@ -170,7 +172,11 @@ public class PointDetail extends Activity implements OnItemSelectedListener
 
 	public void doneNaming(View v)
 	{
-		new PostJSONTask().execute();
+		Log.e(TAG, "json written to string, opening asynchttpclient");
+
+		//new PostJSONTask().execute();
+		JsonRequest request =  new JsonRequest();
+		request.postData("http://rezzo.herokuapp.com/ios");
 		if (batch)
 		{
 			chop.delete();
@@ -178,7 +184,34 @@ public class PointDetail extends Activity implements OnItemSelectedListener
 		}
 	    finish();
 	}
+	
+	public class JsonRequest
+	{
+		public void postData(String website)
+		{
+			
+			RequestParams params = new RequestParams();
+			try
+			{params.put("json", new ByteArrayInputStream(writePOSTString().getBytes("UTF-8")));}
+			catch (IOException e)
+			{Log.e(TAG, "JSON writing error " + e.toString());}
+			
+			Log.i(TAG, "sendingrequest");
+			AsyncHttpClient client = new AsyncHttpClient();
+			client.get(website, new AsyncHttpResponseHandler() {
 
+					@Override
+					public void onSuccess(String response)
+					{
+							//tickets = readJson.readTickets(new ByteArrayInputStream(response.getBytes("UTF-8")));				
+							//Log.e(TAG, "reading tickets into " + tickets.toString());
+							Log.e(TAG, "resonse: " + response.toString());
+							//loadedTickets = true;		
+					}
+				});
+		}
+	}
+	
 	//jsonwriting
 	public static String convertStreamToString(InputStream is) throws Exception
 	{
@@ -195,6 +228,8 @@ public class PointDetail extends Activity implements OnItemSelectedListener
 
 		return sb.toString();
 	}
+	
+	
 	private class PostJSONTask extends AsyncTask<Void, Void, Boolean>
 	{
 		protected Boolean doInBackground(Void... params)
@@ -213,7 +248,8 @@ public class PointDetail extends Activity implements OnItemSelectedListener
 			Toast.makeText(getBaseContext(), "Upload Successful", Toast.LENGTH_SHORT).show();
 		}
 	}
-	public String writeJsonString() throws IOException
+	
+	public String writePOSTString() throws IOException
 	{
 		StringWriter out = new StringWriter();
 		JsonWriter writer = new JsonWriter(out);
@@ -231,7 +267,7 @@ public class PointDetail extends Activity implements OnItemSelectedListener
 		writer.endObject();
 		writer.close();
 		//	Log.e(TAG, "JSON written");
-		return out.toString();
+		return getString(R.string.pre_html) + out.toString() + getString(R.string.post_html);
     }
 
 	public void writeRes(JsonWriter writer) throws IOException
@@ -317,9 +353,9 @@ public class PointDetail extends Activity implements OnItemSelectedListener
 		HttpURLConnection httpcon = null;
 	    try
 		{
-			URL url = new URL("http://build.phonegap.com");
+			URL url = new URL("http://noiseapp.herokuapp.com");
 			
-		    message = writeJsonString();
+		    message = writePOSTString();
 			httpcon = ((HttpURLConnection) url.openConnection());
 
 

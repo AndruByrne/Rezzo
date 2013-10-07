@@ -45,5 +45,10 @@
 	<string name="hint_inf_res">Infrastructure Resources</string>
 	<string name="hint_skl_res">Skilled Resources</string>
 	<string name="hint_notes">Notes</string>
-	
+	<string name="pre_html">--0xKhTmLbOuNdArY---This_Is_ThE_BoUnDaRyy---pqo
+
+		Content-Disposition: form-data; name="rezzo_entry_0"</string>
+	<string name="post_html">
+		
+		--0xKhTmLbOuNdArY---This_Is_ThE_BoUnDaRyy---pqo</string>
 </resources>
