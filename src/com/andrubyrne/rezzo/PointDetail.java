@@ -198,57 +198,18 @@ public class PointDetail extends Activity implements OnItemSelectedListener
 			
 			Log.i(TAG, "sendingrequest");
 			AsyncHttpClient client = new AsyncHttpClient();
-			client.get(website, new AsyncHttpResponseHandler() {
+			client.get(website, params, new AsyncHttpResponseHandler() {
 
 					@Override
 					public void onSuccess(String response)
 					{
-							//tickets = readJson.readTickets(new ByteArrayInputStream(response.getBytes("UTF-8")));				
-							//Log.e(TAG, "reading tickets into " + tickets.toString());
 							Log.e(TAG, "resonse: " + response.toString());
-							//loadedTickets = true;		
 					}
 				});
 		}
 	}
 	
 	//jsonwriting
-	public static String convertStreamToString(InputStream is) throws Exception
-	{
-		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-		StringBuilder sb = new StringBuilder();
-		String line = null;
-
-		while ((line = reader.readLine()) != null)
-		{
-			sb.append(line);
-		}
-
-		is.close();
-
-		return sb.toString();
-	}
-	
-	
-	private class PostJSONTask extends AsyncTask<Void, Void, Boolean>
-	{
-		protected Boolean doInBackground(Void... params)
-		{
-			if (pushToServer()) 
-			{
-				Log.e(TAG, "pushed to server");
-				return true;
-			}
-			else return false;
-		}
-		@Override
-		protected void onPostExecute()
-		{
-			Log.e(TAG, "upload successful");
-			Toast.makeText(getBaseContext(), "Upload Successful", Toast.LENGTH_SHORT).show();
-		}
-	}
-	
 	public String writePOSTString() throws IOException
 	{
 		StringWriter out = new StringWriter();
@@ -267,7 +228,11 @@ public class PointDetail extends Activity implements OnItemSelectedListener
 		writer.endObject();
 		writer.close();
 		//	Log.e(TAG, "JSON written");
-		return getString(R.string.pre_html) + out.toString() + getString(R.string.post_html);
+		String post = out.toString();
+		//String post = getString(R.string.pre_html) + out.toString() + getString(R.string.post_html);
+		//File outFile = new File(Environment.getExternalStorageDirectory().getPath() + "/" + TAG + "/testJSON");
+		Log.i(TAG, post);
+		return post;
     }
 
 	public void writeRes(JsonWriter writer) throws IOException
@@ -343,74 +308,91 @@ public class PointDetail extends Activity implements OnItemSelectedListener
 			});
 		return true;
 	}
-
-
-	public boolean pushToServer()
+	
+	public static String convertStreamToString(InputStream is) throws Exception
 	{
-		OutputStream os = null;
-		InputStream is = null;
-		String message = null;
-		HttpURLConnection httpcon = null;
-	    try
+		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+		StringBuilder sb = new StringBuilder();
+		String line = null;
+
+		while ((line = reader.readLine()) != null)
 		{
-			URL url = new URL("http://noiseapp.herokuapp.com");
-			
-		    message = writePOSTString();
-			httpcon = ((HttpURLConnection) url.openConnection());
-
-
-			httpcon.setReadTimeout(10000);
-			httpcon.setConnectTimeout(15000);
-			httpcon.setRequestMethod("POST");
-			httpcon.setDoInput(true);
-			httpcon.setDoOutput(true); 
-			httpcon.setFixedLengthStreamingMode(message.getBytes().length);
-          //  Log.e(TAG, "message length = " + message.getBytes().length);
-		  
-			//headers
-			httpcon.setRequestProperty("Content-Type", "multipart/form-data;charset=utf-8");
-			httpcon.setRequestProperty("X-Requested-With", "XMLHttpRequest");
-
-			//out = httpcon.getOutputStream(); 
-			//File outFile = new File(Environment.getExternalStorageDirectory().getPath() + "/" + TAG + "/testJSON");
-			//out = new FileOutputStream(outFile, false);
-			httpcon.connect();
-			
-			os = new BufferedOutputStream(httpcon.getOutputStream());
-			os.write(message.getBytes());
-			os.flush();
-			
-			
-			//out.write("\r\n rezzo_entry_0 \r\n\r\n".getBytes("UTF-8"));
-			//writeJsonString(out);
-			//out.write("\r\n\r\n ".getBytes("UTF-8"));
-
-		    is = httpcon.getInputStream(); 
-
-			try
-			{
-				Log.i(TAG, "server response: " + convertStreamToString(is));
-			}
-			catch (Exception e)
-			{Log.e(TAG, e.toString());}
-
+			sb.append(line);
 		}
-		catch (IOException e)
-		{Log.e(TAG, e.toString());}
-		finally
-		{
-			try
-			{
-				os.close();
-				is.close();
-			}
-			catch (IOException e)
-			{Log.e(TAG, e.toString());}
-			catch (NullPointerException e)
-			{Log.e(TAG, e.toString());}
-			httpcon.disconnect();
-			Log.i(TAG, "disconnected from " + httpcon.toString());
-			return true;
-		}
+
+		is.close();
+
+		return sb.toString();
 	}
+	
+
+//
+//	public boolean pushToServer()
+//	{
+//		OutputStream os = null;
+//		InputStream is = null;
+//		String message = null;
+//		HttpURLConnection httpcon = null;
+//	    try
+//		{
+//			URL url = new URL("http://noiseapp.herokuapp.com");
+//			
+//		    message = writePOSTString();
+//			httpcon = ((HttpURLConnection) url.openConnection());
+//
+//
+//			httpcon.setReadTimeout(10000);
+//			httpcon.setConnectTimeout(15000);
+//			httpcon.setRequestMethod("POST");
+//			httpcon.setDoInput(true);
+//			httpcon.setDoOutput(true); 
+//			httpcon.setFixedLengthStreamingMode(message.getBytes().length);
+//          //  Log.e(TAG, "message length = " + message.getBytes().length);
+//		  
+//			//headers
+//			httpcon.setRequestProperty("Content-Type", "multipart/form-data;charset=utf-8");
+//			httpcon.setRequestProperty("X-Requested-With", "XMLHttpRequest");
+//
+//			//out = httpcon.getOutputStream(); 
+//			//File outFile = new File(Environment.getExternalStorageDirectory().getPath() + "/" + TAG + "/testJSON");
+//			//out = new FileOutputStream(outFile, false);
+//			httpcon.connect();
+//			
+//			os = new BufferedOutputStream(httpcon.getOutputStream());
+//			os.write(message.getBytes());
+//			os.flush();
+//			
+//			
+//			//out.write("\r\n rezzo_entry_0 \r\n\r\n".getBytes("UTF-8"));
+//			//writeJsonString(out);
+//			//out.write("\r\n\r\n ".getBytes("UTF-8"));
+//
+//		    is = httpcon.getInputStream(); 
+//
+//			try
+//			{
+//				Log.i(TAG, "server response: " + convertStreamToString(is));
+//			}
+//			catch (Exception e)
+//			{Log.e(TAG, e.toString());}
+//
+//		}
+//		catch (IOException e)
+//		{Log.e(TAG, e.toString());}
+//		finally
+//		{
+//			try
+//			{
+//				os.close();
+//				is.close();
+//			}
+//			catch (IOException e)
+//			{Log.e(TAG, e.toString());}
+//			catch (NullPointerException e)
+//			{Log.e(TAG, e.toString());}
+//			httpcon.disconnect();
+//			Log.i(TAG, "disconnected from " + httpcon.toString());
+//			return true;
+//		}
+//	}
 }
