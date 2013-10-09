@@ -83,7 +83,7 @@ public class PointDetail extends Activity implements OnItemSelectedListener
 		resNat = new ArrayList<String>();
 		resInf = new ArrayList<String>();
 		resSkl = new ArrayList<String>();
-		
+
 		setSpinners();
     }
 
@@ -184,36 +184,40 @@ public class PointDetail extends Activity implements OnItemSelectedListener
 		}
 	    finish();
 	}
-	
+
 	public class JsonRequest
 	{
 		public void postData(String website)
 		{
-			
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			RequestParams params = new RequestParams();
 			try
-			{params.put("json", new ByteArrayInputStream(writePOSTString().getBytes("UTF-8")));}
+			{
+				writePOSTStream(out);
+				//it's a small string...
+				params.put("rezzo_entry_0", new ByteArrayInputStream(out.toByteArray()), "rezzo_entry_0", "multipart/form-data");
+				Log.e(TAG, "http_param: " + params.getEntity().toString());
+			}
 			catch (IOException e)
 			{Log.e(TAG, "JSON writing error " + e.toString());}
-			
+
 			Log.i(TAG, "sendingrequest");
 			AsyncHttpClient client = new AsyncHttpClient();
-			client.get(website, params, new AsyncHttpResponseHandler() {
+			client.post(website, params, new AsyncHttpResponseHandler() {
 
 					@Override
 					public void onSuccess(String response)
 					{
-							Log.e(TAG, "resonse: " + response.toString());
+						Log.e(TAG, "resonse: " + response.toString());
 					}
 				});
 		}
 	}
-	
+
 	//jsonwriting
-	public String writePOSTString() throws IOException
+	public void writePOSTStream(OutputStream out) throws IOException
 	{
-		StringWriter out = new StringWriter();
-		JsonWriter writer = new JsonWriter(out);
+		JsonWriter writer = new JsonWriter(new OutputStreamWriter(out, "UTF-8"));
 		writer.setIndent("    ");
 		writer.beginObject();
 //		writer.name("GIS coordinates");
@@ -232,7 +236,7 @@ public class PointDetail extends Activity implements OnItemSelectedListener
 		//String post = getString(R.string.pre_html) + out.toString() + getString(R.string.post_html);
 		//File outFile = new File(Environment.getExternalStorageDirectory().getPath() + "/" + TAG + "/testJSON");
 		Log.i(TAG, post);
-		return post;
+		
     }
 
 	public void writeRes(JsonWriter writer) throws IOException
@@ -308,7 +312,7 @@ public class PointDetail extends Activity implements OnItemSelectedListener
 			});
 		return true;
 	}
-	
+
 	public static String convertStreamToString(InputStream is) throws Exception
 	{
 		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
@@ -324,7 +328,7 @@ public class PointDetail extends Activity implements OnItemSelectedListener
 
 		return sb.toString();
 	}
-	
+
 
 //
 //	public boolean pushToServer()
