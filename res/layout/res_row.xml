@@ -12,6 +12,8 @@
             android:id="@+id/toptext"
             android:layout_width="fill_parent"
             android:layout_height="0dip"
+			android:textColor="#33B5E5"
+			
             android:layout_weight="1"
             android:gravity="center_vertical"
         />
