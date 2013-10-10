@@ -176,7 +176,7 @@ public class PointDetail extends Activity implements OnItemSelectedListener
 
 		//new PostJSONTask().execute();
 		JsonRequest request =  new JsonRequest();
-		request.postData("http://rezzo.herokuapp.com/ios");
+		request.postData("localhost:8080");
 		if (batch)
 		{
 			chop.delete();
@@ -203,7 +203,7 @@ public class PointDetail extends Activity implements OnItemSelectedListener
 
 			Log.i(TAG, "sendingrequest");
 			AsyncHttpClient client = new AsyncHttpClient();
-			client.post(website, params, new AsyncHttpResponseHandler() {
+			client.get(website, params, new AsyncHttpResponseHandler() {
 
 					@Override
 					public void onSuccess(String response)
