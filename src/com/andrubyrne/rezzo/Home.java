@@ -68,10 +68,14 @@ public class Home extends Activity
 		preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		gsmUser = preferences.getBoolean("use_gsm", false);
 //		gsmUser = preferences.getBoolean("ignore_wifi", false);
-		File[] refImages = outDir.listFiles(jpgFileFilter);
-		if (!gsmUser && refImages.length > 0 && utils.isConnected(this))
-		{ // notify batch processing availability if needed
-			utils.batchNotification(this);
+	//	Log.i(TAG, "outdir: " + outDir);
+		if (utils.imageDirectoryExists(outDir))
+		{
+			final File[] refImages = outDir.listFiles(jpgFileFilter);
+			if (!gsmUser && refImages.length > 0 && utils.isConnected(this))
+			{ // notify batch processing availability if needed
+				utils.batchNotification(this);
+			}
 		}
 		locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 100, locationListener); // 15min
@@ -136,9 +140,10 @@ public class Home extends Activity
 				if (utils.isConnected(this) || gsmUser)
 				{
 					//	attach GIS data
-					File out = new File(getFilesDir(), "newImage.jpg");
-					writeExif(out);
-					
+					//File out = new File(getFilesDir(), "newImage.jpg");
+					writeExif(cameraPic);
+
+					//send to next activity
 					Intent i = new Intent(this, GIScraper.class);
 					i.putExtra("batch", false);
 					i.putExtra("filepath", getFilesDir() + "/newImage.jpg");
@@ -148,7 +153,7 @@ public class Home extends Activity
 				{//save image file to external storage
 					Toast.makeText(getBaseContext(), R.string.no_wifi_photo, Toast.LENGTH_LONG).show();
 					try
-					{writeExif(utils.copyImage(cameraPic, outDir));}
+					{writeExif(utils.imageCopyToExternal(cameraPic));}
 					catch (IOException e)
 					{Log.e(TAG, e.toString());}
 				}

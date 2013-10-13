@@ -13,7 +13,6 @@ import android.widget.AdapterView.*;
 import java.util.*;
 import com.andrubyrne.utils.*;
 import javax.crypto.*;
-import com.loopj.android.http.*;
 
 public class PointDetail extends Activity implements OnItemSelectedListener
 {

@@ -19,6 +19,8 @@ public class Utils extends Activity
 	private static StringBuilder stringBuilder;
 	private final String TAG = getClass().getSimpleName();
 	SharedPreferences preferences;
+
+	private File outFile;
 	
 	public void askForGPS(Context context)
 	{
@@ -75,21 +77,29 @@ public class Utils extends Activity
 		mgr.notify(HELLO_ID, noti);
 	}
 	
-	public File copyImage(File inFile, File outDir) 
-	throws IOException
-	{ 
-		File outFile = new File(outDir + DateFormat.format("dd-MM-yyyy:hh:mm:ss", new java.util.Date()).toString() + ".jpg");
+	public boolean imageDirectoryExists(File outDir)
+	{
+		outFile = new File(outDir + "/" + DateFormat.format("dd-MM-yyyy:hh:mm:ss", new java.util.Date()).toString() + ".jpg");
 		if (!outDir.exists())
 		{
 			try
 			{
 				outDir.mkdirs();
+			    return true;
 			}
 			catch (SecurityException e)
 			{
 				Log.e(TAG, "unable to write on the sd card " + e.toString());
+				return false;
 			}
 		}
+		else return true;
+	}
+	
+	public File imageCopyToExternal(File inFile) 
+	throws IOException
+	{ 
+		Log.i(TAG, "infile: " + inFile.getPath().toString() + "outfile: " + outFile.getAbsolutePath().toString());
     	OutputStream out = new FileOutputStream(outFile, false);
 		InputStream in = new FileInputStream(inFile);
 
