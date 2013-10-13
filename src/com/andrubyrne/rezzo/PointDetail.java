@@ -204,41 +204,41 @@ public class PointDetail extends Activity implements OnItemSelectedListener
 		
 	}
 	
-	public class JsonRequest
-	{
-		public void postData(String website)
-		{
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			RequestParams params = new RequestParams();
-			try
-			{
-				writePOSTStream(out);
-				//it's a small string...
-				params.put("rezzo_entry_0", new ByteArrayInputStream(out.toByteArray()), "rezzo_entry_0", "multipart/form-data");
-				Log.e(TAG, "http_param: " + params.getEntity().toString());
-			}
-			catch (IOException e)
-			{Log.e(TAG, "JSON writing error " + e.toString());}
-
-			Log.i(TAG, "sendingrequest");
-			AsyncHttpClient client = new AsyncHttpClient();
-			client.post(website, params, new AsyncHttpResponseHandler() {
-
-					@Override
-					public void onSuccess(String response)
-					{
-						Log.e(TAG, "resonse: " + response.toString());
-					}
-				});
-		}
-	}
+//	public class JsonRequest
+//	{
+//		public void postData(String website)
+//		{
+//			ByteArrayOutputStream out = new ByteArrayOutputStream();
+//			RequestParams params = new RequestParams();
+//			try
+//			{
+//				writePOSTStream(out);
+//				//it's a small string...
+//				params.put("rezzo_entry_0", new ByteArrayInputStream(out.toByteArray()), "rezzo_entry_0", "multipart/form-data");
+//				Log.e(TAG, "http_param: " + params.getEntity().toString());
+//			}
+//			catch (IOException e)
+//			{Log.e(TAG, "JSON writing error " + e.toString());}
+//
+//			Log.i(TAG, "sendingrequest");
+//			AsyncHttpClient client = new AsyncHttpClient();
+//			client.post(website, params, new AsyncHttpResponseHandler() {
+//
+//					@Override
+//					public void onSuccess(String response)
+//					{
+//						Log.e(TAG, "resonse: " + response.toString());
+//					}
+//				});
+//		}
+//	}
 
 	//jsonwriting
-	public String writePOSTString() throws IOException
+	public String writeJSONString() throws IOException
 	{
 		StringWriter out = new StringWriter();
 		JsonWriter writer = new JsonWriter(out);
-		writer.setIndent("    ");
+	//	writer.setIndent("    ");
 		writer.beginObject();
 //		writer.name("GIS coordinates");
 		writer.name("title").value(namePoint.getText().toString());
@@ -253,35 +253,35 @@ public class PointDetail extends Activity implements OnItemSelectedListener
 		writer.close();
 		Log.e(TAG, "JSON written");
 		//String post = out.toString();
-		String post = getString(R.string.pre_html) + out.toString() + getString(R.string.post_html);
+		String post = out.toString();
 		//File outFile = new File(Environment.getExternalStorageDirectory().getPath() + "/" + TAG + "/testJSON");
-		Log.i(TAG, post);
+	//	Log.i(TAG, post);
 		return post;
     }
 	
-	public void writePOSTStream(OutputStream out) throws IOException
-	{
-		JsonWriter writer = new JsonWriter(new OutputStreamWriter(out, "UTF-8"));
-		writer.setIndent("    ");
-		writer.beginObject();
-//		writer.name("GIS coordinates");
-		writer.name("title").value(namePoint.getText().toString());
-		writer.name("longitude").value(intent.getDoubleExtra("Longitude", 0.0)).toString();
-		//	writeGIS(writer);
-        writer.name("notes").value(notesPoint.getText().toString());
-		writer.name("region").value(preferences.getString("region", "none"));
-		writer.name("latitude").value(intent.getDoubleExtra("Latitude", 0.0)).toString();
-		writer.name("resources");
-		writeRes(writer);
-		writer.endObject();
-		writer.close();
-		//	Log.e(TAG, "JSON written");
-		String post = out.toString();
-		//String post = getString(R.string.pre_html) + out.toString() + getString(R.string.post_html);
-		//File outFile = new File(Environment.getExternalStorageDirectory().getPath() + "/" + TAG + "/testJSON");
-		Log.i(TAG, post);
-		
-    }
+//	public void writePOSTStream(OutputStream out) throws IOException
+//	{
+//		JsonWriter writer = new JsonWriter(new OutputStreamWriter(out, "UTF-8"));
+//	//	writer.setIndent("    ");
+//		writer.beginObject();
+////		writer.name("GIS coordinates");
+//		writer.name("title").value(namePoint.getText().toString());
+//		writer.name("longitude").value(intent.getDoubleExtra("Longitude", 0.0)).toString();
+//		//	writeGIS(writer);
+//        writer.name("notes").value(notesPoint.getText().toString());
+//		writer.name("region").value(preferences.getString("region", "none"));
+//		writer.name("latitude").value(intent.getDoubleExtra("Latitude", 0.0)).toString();
+//		writer.name("resources");
+//		writeRes(writer);
+//		writer.endObject();
+//		writer.close();
+//		//	Log.e(TAG, "JSON written");
+//		//String post = out.toString();
+//		//String post = getString(R.string.pre_html) + out.toString() + getString(R.string.post_html);
+//		//File outFile = new File(Environment.getExternalStorageDirectory().getPath() + "/" + TAG + "/testJSON");
+//		//Log.i(TAG, post);
+//		
+//    }
 
 	public void writeRes(JsonWriter writer) throws IOException
 	{
@@ -384,10 +384,21 @@ public class PointDetail extends Activity implements OnItemSelectedListener
 		HttpURLConnection httpcon = null;
 	    try
 		{
-			URL url = new URL("http://ancient-bastion-8004.herokuapp.com/ios");
-			//URL url = new URL("http://www.android.com");
+			URL url = new URL("http://rezzo.herokuapp.com/ios");
+			//URL url = new URL("http://ancient-bastion-8004.herokuapp.com/ios");
 			
-		    message = writePOSTString();
+		    message = "--" +
+			          getString(R.string.boundary) + 
+					  "\r\n" + 
+			          getString(R.string.pre_html) +
+					  "\r\n\r\n" +
+					  writeJSONString() + 
+					  "\r\n" +
+					  "--" +
+					  getString(R.string.boundary) + 
+					  "--\r\n\r\n";
+					  
+		    Log.d(TAG, "posting: " + message);
 			httpcon = ((HttpURLConnection) url.openConnection());
 
 
@@ -397,30 +408,15 @@ public class PointDetail extends Activity implements OnItemSelectedListener
 			httpcon.setDoInput(true);
 			httpcon.setDoOutput(true); 
 			httpcon.setFixedLengthStreamingMode(message.getBytes().length);
-          //  Log.e(TAG, "message length = " + message.getBytes().length);
-		  
+		    String headerparts = new String("multipart/form-data; boundary=0xKhTmLbOuNdArY---This_Is_ThE_BoUnDaRyy---pqo");
 			//headers
-			httpcon.setRequestProperty("Content-Type", "multipart/form-data; boundary=0xKhTmLbOuNdArY---This_Is_ThE_BoUnDaRyy---pqo");
-			//httpcon.setRequestProperty("X-Requested-With", "XMLHttpRequest");
-
-			//out = httpcon.getOutputStream(); 
-			//File outFile = new File(Environment.getExternalStorageDirectory().getPath() + "/" + TAG + "/testJSON");
-			//out = new FileOutputStream(outFile, false);
+			httpcon.setRequestProperty("Content-Type", headerparts);
+			Log.e(TAG, headerparts + "123");
 			httpcon.connect();
 			
 			os = new BufferedOutputStream(httpcon.getOutputStream());
-			//os.write("\r\n rezzo_entry_0 \r\n\r\n".getBytes("UTF-8"));
-			os.write(message.getBytes());
-			//os.write("\r\n\r\n ".getBytes("UTF-8"));
-			
-			
+			os.write(message.getBytes("UTF-8"));
 			os.flush();
-			
-			
-			//out.write("\r\n rezzo_entry_0 \r\n\r\n".getBytes("UTF-8"));
-			//writeJsonString(out);
-			//out.write("\r\n\r\n ".getBytes("UTF-8"));
-
 		    is = httpcon.getInputStream(); 
 
 			try
